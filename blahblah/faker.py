@@ -172,7 +172,7 @@ class Faker(district42.json_schema.AbstractVisitor):
     for key, item_schema in schema._params['keys'].items():
       if args and key in args[0]:
         obj[key] = item_schema.accept(self, args[0][key])
-      elif 'required' not in item_schema._params or item_schema['required']._params:
+      elif 'required' not in item_schema._params or item_schema._params['required']:
         obj[key] = item_schema.accept(self)
       elif random.randint(0, 1):
         obj[key] = item_schema.accept(self)
