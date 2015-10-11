@@ -33,7 +33,7 @@ class Faker(district42.json_schema.AbstractVisitor):
     else:
       alphabet = string.ascii_letters
     
-    if 'alphabetic' in schema._params :
+    if 'alphabetic' in schema._params:
       return alphabet
       
     if 'alpha_num' in schema._params:
