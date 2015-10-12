@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 setup(
   name='blahblah',
   packages=find_packages(),
-  version='0.5.2',
+  version='0.5.3',
   description='Fake data generator for district42 schema',
   url='https://github.com/nikitanovosibirsk/blahblah',
   author='Nikita Tsvetkov',
