@@ -2,6 +2,8 @@ import random
 import string
 import exrex
 import district42.json_schema
+from time import time
+from datetime import datetime
 
 
 class Faker(district42.json_schema.AbstractVisitor):
@@ -116,6 +118,31 @@ class Faker(district42.json_schema.AbstractVisitor):
     length = self.__get_length(schema)
     alphabet = self.__get_alphabet(schema)
     return ''.join([random.choice(alphabet) for x in range(length)])
+
+  def visit_timestamp(self, schema, *args):
+    if args: return args[0]
+
+    if 'examples' in schema._params:
+      return random.choice(schema._params['examples'])
+
+    min_value, max_value = 0, int(time())
+    if 'min_value' in schema._params:
+      min_value = int(schema._params['min_value'].epoch())
+    if 'max_value' in schema._params:
+      max_value = int(schema._params['max_value'].epoch())
+
+    if 'value' in schema._params:
+      timestamp = datetime.utcfromtimestamp(schema._params['value'].epoch())
+    else:
+      timestamp = datetime.utcfromtimestamp(random.randint(min_value, max_value))
+
+    if 'iso' in schema._params:
+      return timestamp.isoformat()
+
+    if 'format' in schema._params:
+      return timestamp.strftime(schema._params['format'])
+
+    return str(timestamp)
 
   def visit_array(self, schema, *args):
     if args: return args[0]

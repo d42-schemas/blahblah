@@ -44,6 +44,9 @@ class Substitutor(district42.json_schema.AbstractVisitor):
   def visit_string(self, schema, value):
     return self.__visit_valuable(schema, value)
 
+  def visit_timestamp(self, schema, value):
+    return self.__visit_valuable(schema, value)
+
   def visit_array(self, schema, items):
     array_items = []
     for item in items:

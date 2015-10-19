@@ -24,6 +24,10 @@ class TestSubstitution(SubstitutionTestCase):
     self.assertSchemaCloned(schema.string, 'banana')
     self.assertSchemaHasValue(schema.string, 'banana')
 
+  def test_timestamp_type_substitution(self):
+    self.assertSchemaCloned(schema.timestamp, '21-10-2015 04:29 pm')
+    self.assertSchemaHasValue(schema.timestamp, '21-10-2015 04:29 pm')
+
   def test_array_type_substitution(self):
     self.assertSchemaCloned(schema.array, [1, 2, 3])
     self.assertIsInstance(schema.array % [1, 2, 3], schema.types.Array)

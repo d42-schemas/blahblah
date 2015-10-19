@@ -195,6 +195,23 @@ class TestFaker(unittest.TestCase):
     data = fake(schema.string.non_empty)
     self.assertGreaterEqual(len(data), 1)
 
+  def test_timestamp_type_generator(self):
+    # type
+    data = fake(schema.timestamp)
+    self.assertIsInstance(data, str)
+
+    # overriding
+    data = fake(schema.timestamp, '21-10-2015 04:29 pm')
+    self.assertEqual(data, '21-10-2015 04:29 pm')
+    
+    # example
+    data = fake(schema.timestamp.example('01/01/2015'))
+    self.assertEqual(data, '01/01/2015')
+
+    # value
+    data = fake(schema.timestamp('21-10-2015 04:29 pm'))
+    self.assertEqual(data, '2015-10-21 16:29:00')
+
   def test_array_type_generator(self):
     # type
     data = fake(schema.array)
