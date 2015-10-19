@@ -17,7 +17,13 @@ class Faker(district42.json_schema.AbstractVisitor):
     if 'length' in schema._params:
       return schema._params['length']
 
-    min_length, max_length = 1, 64
+    min_length, max_length = 0, 64
+
+    if ('contains' in schema._params) or ('contains_one' in schema._params):
+      min_length = 1
+    if 'contains_many' in schema._params:
+      min_length = 2
+
     if 'min_length' in schema._params:
       min_length = schema._params['min_length']
     if 'max_length' in schema._params:
@@ -39,12 +45,18 @@ class Faker(district42.json_schema.AbstractVisitor):
     if 'alpha_num' in schema._params:
       return alphabet + string.digits
 
-    return alphabet + string.digits + string.punctuation + string.whitespace
+    return alphabet + string.digits + '-_'
 
   def __get_object_key(self):
     return district42.json_schema.string.alphabetic.lowercase.length(1).accept(self) + \
            district42.json_schema.string.alpha_num.lowercase.length(1, 15).accept(self)
   
+  def __is_required(self, schema):
+    return 'required' not in schema._params or schema._params['required']
+
+  def __is_undefined(self, schema):
+    return type(schema) is district42.json_schema.types.Undefined
+
   def visit_null(self, schema, *args):
     return None
 
@@ -91,6 +103,9 @@ class Faker(district42.json_schema.AbstractVisitor):
 
     if 'examples' in schema._params:
       return random.choice(schema._params['examples'])
+
+    if 'uri' in schema._params:
+      return 'http://localhost/'
 
     if 'pattern' in schema._params:
       return exrex.getone(schema._params['pattern'])
@@ -149,19 +164,22 @@ class Faker(district42.json_schema.AbstractVisitor):
       return random.choice(schema._params['examples'])
     
     obj = {}
-    for key, item_schema in schema._params['keys'].items():
-      if args and key in args[0]:
-        obj[key] = item_schema.accept(self, args[0][key])
-      elif 'required' not in item_schema._params or item_schema._params['required']:
-        obj[key] = item_schema.accept(self)
-      elif random.randint(0, 1):
-        obj[key] = item_schema.accept(self)
+    if 'keys' in schema._params:
+      for key, item_schema in schema._params['keys'].items():
+        if args and key in args[0]:
+          if self.__is_undefined(item_schema):
+            obj[key] = args[0][key]
+          else:
+            obj[key] = item_schema.accept(self, args[0][key])
+        elif not self.__is_undefined(item_schema) and self.__is_required(item_schema):
+          obj[key] = item_schema.accept(self)
 
-    if len(obj) == 0 or any(x in schema._params for x in ['length', 'min_length', 'max_length']):
-      length = self.__get_length(schema) - len(obj)
-      for x in range(length):
-        key = self.__get_object_key()
-        obj[key] = random.choice(self.primitives).accept(self)
+    if ('keys' not in schema._params) or (len(schema._params['keys']) > 0):
+      if len(obj) == 0 or any(x in schema._params for x in ['length', 'min_length', 'max_length']):
+        length = self.__get_length(schema) - len(obj)
+        for x in range(length):
+          key = self.__get_object_key()
+          obj[key] = random.choice(self.primitives).accept(self)
 
     return obj
 

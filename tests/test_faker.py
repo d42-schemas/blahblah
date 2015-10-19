@@ -38,102 +38,60 @@ class TestFaker(unittest.TestCase):
     data = fake(schema.number(42))
     self.assertEqual(data, 42)
 
+    data = fake(schema.number(3.14))
+    self.assertEqual(data, 3.14)
+
     # overriding
     data = fake(schema.number(1), 42)
     self.assertEqual(data, 42)
+
+    data = fake(schema.number(1.0), 3.14)
+    self.assertEqual(data, 3.14)
 
     # example
     data = fake(schema.number.example(0))
     self.assertEqual(data, 0)
 
-  def test_integer_type_generator(self):
-    # type
-    data = fake(schema.integer)
-    self.assertIsInstance(data, int)
-
-    # value
-    data = fake(schema.integer(42))
-    self.assertEqual(data, 42)
-
-    # overriding
-    data = fake(schema.integer(1), 42)
-    self.assertEqual(data, 42)
-
-    # example
-    data = fake(schema.integer.example(0))
-    self.assertEqual(data, 0)
-
     # min
-    data = fake(schema.integer.min(0))
+    data = fake(schema.number.min(0))
     self.assertGreaterEqual(data, 0)
 
     # max
-    data = fake(schema.integer.max(0))
+    data = fake(schema.number.max(0))
     self.assertLessEqual(data, 0)
 
     # between
-    data = fake(schema.integer.between(0, 1))
+    data = fake(schema.number.between(0, 1))
     self.assertTrue(0 <= data <= 1)
 
     # positive
-    data = fake(schema.integer.positive)
+    data = fake(schema.number.positive)
     self.assertGreater(data, 0)
 
+    data = fake(schema.number.non_positive)
+    self.assertLessEqual(data, 0)
+
     # negative
-    data = fake(schema.integer.negative)
+    data = fake(schema.number.negative)
     self.assertLess(data, 0)
 
+    data = fake(schema.number.non_negative)
+    self.assertGreaterEqual(data, 0)
+
+    # unsigned
+    data = fake(schema.number.unsigned)
+    self.assertGreaterEqual(data, 0)
+
     # zero
-    data = fake(schema.integer.zero)
+    data = fake(schema.number.zero)
     self.assertEqual(data, 0)
 
     # multiple
-    data = fake(schema.integer.multiple(3))
+    data = fake(schema.number.multiple(3))
     self.assertEqual(data % 3, 0)
 
-    data = fake(schema.integer.multiple(11))
+    data = fake(schema.number.multiple(11))
     self.assertEqual(data % 11, 0)
-
-  def test_float_type_generator(self):
-    # type
-    data = fake(schema.float)
-    self.assertIsInstance(data, float)
-
-    # value
-    data = fake(schema.float(3.14))
-    self.assertEqual(data, 3.14)
-
-    # overriding
-    data = fake(schema.float(3.14), -3.14)
-    self.assertEqual(data, -3.14)
-
-    # example
-    data = fake(schema.float.example(0.0))
-    self.assertEqual(data, 0.0)
-
-    # min
-    data = fake(schema.float.min(0.0))
-    self.assertGreaterEqual(data, 0.0)
-
-    # max
-    data = fake(schema.float.max(0.0))
-    self.assertLessEqual(data, 0.0)
-
-    # between
-    data = fake(schema.float.between(0.0, 1.0))
-    self.assertTrue(0.0 <= data <= 1.0)
-
-    # positive
-    data = fake(schema.integer.positive)
-    self.assertGreater(data, 0.0)
-
-    # negative
-    data = fake(schema.integer.negative)
-    self.assertLess(data, 0.0)
-
-    # zero
-    data = fake(schema.integer.zero)
-    self.assertEqual(data, 0.0)
 
   def test_string_type_generator(self):
     import string
@@ -141,7 +99,7 @@ class TestFaker(unittest.TestCase):
     # type
     data = fake(schema.string)
     self.assertIsInstance(data, str)
-    self.assertGreater(len(data), 0)
+    self.assertGreaterEqual(len(data), 0)
     self.assertTrue(all(x in string.printable for x in data))
 
     # value
@@ -164,11 +122,11 @@ class TestFaker(unittest.TestCase):
     # numeric
     data = fake(schema.string.numeric)
     self.assertIsInstance(data, str)
-    self.assertRegex(data, r'^[0-9]+$')
+    self.assertRegex(data, r'^[0-9]*$')
     
     # alphabetic
     data = fake(schema.string.alphabetic)
-    self.assertRegex(data, r'^[a-zA-Z]+$')
+    self.assertRegex(data, r'^[a-zA-Z]*$')
 
     # alphabetic length
     data = fake(schema.string.alphabetic.length(10))
@@ -176,7 +134,7 @@ class TestFaker(unittest.TestCase):
 
     # alphabetic lowercase
     data = fake(schema.string.alphabetic.lowercase)
-    self.assertRegex(data, r'^[a-z]+$')
+    self.assertRegex(data, r'^[a-z]*$')
 
     # alphabetic lowercase length
     data = fake(schema.string.alphabetic.lowercase.length(10))
@@ -184,7 +142,7 @@ class TestFaker(unittest.TestCase):
 
     # alphabetic uppercase
     data = fake(schema.string.alphabetic.uppercase)
-    self.assertRegex(data, r'^[A-Z]+$')
+    self.assertRegex(data, r'^[A-Z]*$')
 
     # alphabetic uppercase length
     data = fake(schema.string.alphabetic.uppercase.length(10))
@@ -192,7 +150,7 @@ class TestFaker(unittest.TestCase):
 
     # alpha_num
     data = fake(schema.string.alpha_num)
-    self.assertRegex(data, r'^[a-zA-Z0-9]+$')
+    self.assertRegex(data, r'^[a-zA-Z0-9]*$')
 
     # alpha_num length
     data = fake(schema.string.alpha_num.length(10))
@@ -200,7 +158,7 @@ class TestFaker(unittest.TestCase):
 
     # alpha_num lowercase
     data = fake(schema.string.alpha_num.lowercase)
-    self.assertRegex(data, r'^[a-z0-9]+$')
+    self.assertRegex(data, r'^[a-z0-9]*$')
 
     # alpha_num lowercase length
     data = fake(schema.string.alpha_num.lowercase.length(10))
@@ -208,7 +166,7 @@ class TestFaker(unittest.TestCase):
 
     # alpha_num uppercase
     data = fake(schema.string.alpha_num.uppercase)
-    self.assertRegex(data, r'^[A-Z0-9]+$')
+    self.assertRegex(data, r'^[A-Z0-9]*$')
 
     # alpha_num uppercase length
     data = fake(schema.string.alpha_num.uppercase.length(10))
@@ -224,9 +182,18 @@ class TestFaker(unittest.TestCase):
     data = fake(schema.string.length(1, 2))
     self.assertTrue(1 <= len(data) <= 2)
 
+    data = fake(schema.string.min_length(1))
+    self.assertGreaterEqual(len(data), 1)
+
+    data = fake(schema.string.max_length(1))
+    self.assertLessEqual(len(data), 1)
+
     # empty
     data = fake(schema.string.empty)
     self.assertEqual(data, '')
+
+    data = fake(schema.string.non_empty)
+    self.assertGreaterEqual(len(data), 1)
 
   def test_array_type_generator(self):
     # type
@@ -276,9 +243,18 @@ class TestFaker(unittest.TestCase):
     data = fake(schema.array.length(1, 2))
     self.assertTrue(1 <= len(data) <= 2)
 
+    data = fake(schema.array.min_length(1))
+    self.assertGreaterEqual(len(data), 1)
+
+    data = fake(schema.array.max_length(1))
+    self.assertLessEqual(len(data), 1)
+
     # empty
     data = fake(schema.array.empty)
     self.assertEqual(data, [])
+
+    data = fake(schema.array.non_empty)
+    self.assertGreaterEqual(len(data), 1)
 
   def test_array_of_type_generator(self):
     # type
@@ -305,6 +281,12 @@ class TestFaker(unittest.TestCase):
 
     data = fake(schema.array_of(schema.array).length(0, 2))
     self.assertTrue(0 <= len(data) <= 2)
+
+    data = fake(schema.array_of(schema.string).min_length(1))
+    self.assertGreaterEqual(len(data), 1)
+
+    data = fake(schema.array_of(schema.string).max_length(1))
+    self.assertLessEqual(len(data), 1)
 
   def test_object_type_generator(self):
     # type
@@ -356,6 +338,9 @@ class TestFaker(unittest.TestCase):
     # empty
     data = fake(schema.object.empty)
     self.assertEqual(data, {})
+
+    data = fake(schema.object.non_empty)
+    self.assertGreaterEqual(len(data), 1)
 
   def test_any_type_generator(self):
     # type

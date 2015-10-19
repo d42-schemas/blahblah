@@ -56,10 +56,12 @@ class Substitutor(district42.json_schema.AbstractVisitor):
   def visit_object(self, schema, keys):
     clone = deepcopy(schema)
     for key in clone._params['keys']:
-      if key in keys and not self.__is_undefined(clone._params['keys'][key]):
-        if not self.__is_required(clone._params['keys'][key]):
-          clone._params['keys'][key]._params['required'] = True
-        clone._params['keys'][key] %= keys[key]
+      if key not in keys: continue
+      if self.__is_undefined(clone._params['keys'][key]):
+        clone._params['keys'][key] = self.__determine_type(keys[key])
+      if not self.__is_required(clone._params['keys'][key]):
+        clone._params['keys'][key]._params['required'] = True
+      clone._params['keys'][key] %= keys[key]
     return clone
 
   def visit_any(self, schema, value):
