@@ -17,13 +17,8 @@ class TestSubstitution(SubstitutionTestCase):
     self.assertSchemaCloned(schema.number, 42)
     self.assertSchemaHasValue(schema.number, 42)
 
-  def test_integer_type_substitution(self):
-    self.assertSchemaCloned(schema.integer, 42)
-    self.assertSchemaHasValue(schema.integer, 42)
-
-  def test_float_type_substitution(self):
-    self.assertSchemaCloned(schema.float, 3.14)
-    self.assertSchemaHasValue(schema.float, 3.14)
+    self.assertSchemaCloned(schema.number, 3.14)
+    self.assertSchemaHasValue(schema.number, 3.14)
 
   def test_string_type_substitution(self):
     self.assertSchemaCloned(schema.string, 'banana')
@@ -62,8 +57,8 @@ class TestSubstitution(SubstitutionTestCase):
     self.assertSchemaCloned(schema.any, 'banana')
     self.assertIsInstance(schema.any.nullable % None, schema.types.Null)
     self.assertIsInstance(schema.any % True, schema.types.Boolean)
-    self.assertIsInstance(schema.any % 42, schema.types.Integer)
-    self.assertIsInstance(schema.any % 3.14, schema.types.Float)
+    self.assertIsInstance(schema.any % 42, schema.types.Number)
+    self.assertIsInstance(schema.any % 3.14, schema.types.Number)
     self.assertIsInstance(schema.any % '', schema.types.String)
 
   def test_any_of_type_substitution(self):

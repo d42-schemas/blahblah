@@ -60,12 +60,6 @@ class Faker(district42.json_schema.AbstractVisitor):
     return random.choice((True, False))
 
   def visit_number(self, schema, *args):
-    if random.randint(0, 1) == 0:
-      return self.visit_integer(schema, *args)
-    else:
-      return self.visit_float(schema, *args)
-
-  def visit_integer(self, schema, *args):
     if args: return args[0]
 
     if 'value' in schema._params:
@@ -73,35 +67,21 @@ class Faker(district42.json_schema.AbstractVisitor):
 
     if 'examples' in schema._params:
       return random.choice(schema._params['examples'])
-    
+
     min_value, max_value = -2147483648, 2147483647
     if 'min_value' in schema._params:
       min_value = schema._params['min_value']
     if 'max_value' in schema._params:
       max_value = schema._params['max_value']
+    if 'float' in schema._params:
+      min_value, max_value = float(min_value), float(max_value)
+      return random.uniform(min_value, max_value)
 
     if 'multiple' in schema._params:
       base = schema._params['multiple']
       return random.randint(min_value // base, max_value // base) * base
-
+    
     return random.randint(min_value, max_value)
-
-  def visit_float(self, schema, *args):
-    if args: return args[0]
-
-    if 'value' in schema._params:
-      return schema._params['value']
-
-    if 'examples' in schema._params:
-      return random.choice(schema._params['examples'])
-
-    min_value, max_value = -2147483648.0, 2147483647.0
-    if 'min_value' in schema._params:
-      min_value = schema._params['min_value']
-    if 'max_value' in schema._params:
-      max_value = schema._params['max_value']
-
-    return random.uniform(min_value, max_value)
 
   def visit_string(self, schema, *args):
     if args: return args[0]

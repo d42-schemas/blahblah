@@ -41,12 +41,6 @@ class Substitutor(district42.json_schema.AbstractVisitor):
   def visit_number(self, schema, value):
     return self.__visit_valuable(schema, value)
 
-  def visit_integer(self, schema, value):
-    return self.__visit_valuable(schema, value)
-
-  def visit_float(self, schema, value):
-    return self.__visit_valuable(schema, value)
-
   def visit_string(self, schema, value):
     return self.__visit_valuable(schema, value)
 
