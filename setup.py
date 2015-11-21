@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
   name='blahblah',
-  version='0.5.4',
+  version='0.5.5',
   description='Fake data generator for district42 schema',
   url='https://github.com/nikitanovosibirsk/blahblah',
   author='Nikita Tsvetkov',
@@ -12,6 +12,6 @@ setup(
   packages=find_packages(),
   install_requires=[
     'district42==0.5.4',
-    'exrex==0.9.3'
+    'exrex==0.9.4'
   ]
 )
