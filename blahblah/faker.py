@@ -9,7 +9,6 @@ from datetime import datetime
 class Faker(district42.json_schema.AbstractVisitor):
 
   primitives = (
-    district42.json_schema.boolean,
     district42.json_schema.integer,
     district42.json_schema.float,
     district42.json_schema.string
@@ -58,6 +57,23 @@ class Faker(district42.json_schema.AbstractVisitor):
 
   def __is_undefined(self, schema):
     return type(schema) is district42.json_schema.types.Undefined
+
+  def __get_predicate(self, schema):
+    if 'predicate' in schema._params:
+      return schema._params['predicate']
+    return (lambda a, b: a != b)
+
+  def __is_elem_unique(self, elem, array, predicate):
+    for x in array:
+      if not predicate(elem, x):
+        return False
+    return True
+
+  def __generate_unique_elem(self, schema, array, predicate):
+    elem = schema.accept(self)
+    if self.__is_elem_unique(elem, array, predicate):
+      return elem
+    return self.__generate_unique_elem(schema, array, predicate)
 
   def visit_null(self, schema, *args):
     return None
@@ -151,6 +167,12 @@ class Faker(district42.json_schema.AbstractVisitor):
       return random.choice(schema._params['examples'])
 
     if 'items' in schema._params:
+      if 'unique' in schema._params and schema._params['unique']:
+        predicate = self.__get_predicate(schema)
+        unique_array = []
+        for item in schema._params['items']:
+          unique_array += [self.__generate_unique_elem(item, unique_array, predicate)]
+        return unique_array
       return [item.accept(self) for item in schema._params['items']]
 
     length = self.__get_length(schema)
@@ -173,6 +195,15 @@ class Faker(district42.json_schema.AbstractVisitor):
     elif 'contains_many' in schema._params:
       count = random.randint(2, length)
       array += [schema._params['contains_many'].accept(self) for x in range(count)]
+    elif 'unique' in schema._params and schema._params['unique']:
+      primitive = random.choice(self.primitives)
+      predicate = self.__get_predicate(schema)
+      unique_array = [primitive.accept(self)]
+      while len(unique_array) != length:
+        elem = primitive.accept(self)
+        if self.__is_elem_unique(elem, unique_array, predicate):
+          unique_array.append(elem)
+      return unique_array
 
     length -= len(array)
     return array + [random.choice(self.primitives).accept(self) for x in range(length)]
@@ -184,6 +215,15 @@ class Faker(district42.json_schema.AbstractVisitor):
       return random.choice(schema._params['examples'])
 
     length = self.__get_length(schema)
+    if 'unique' in schema._params and schema._params['unique']:
+      predicate = self.__get_predicate(schema)
+      unique_array = [schema._params['items_schema'].accept(self)]
+      while len(unique_array) != length:
+        elem = schema._params['items_schema'].accept(self)
+        if self.__is_elem_unique(elem, unique_array, predicate):
+          unique_array.append(elem)
+      return unique_array
+    
     return [schema._params['items_schema'].accept(self) for x in range(length)]
 
   def visit_object(self, schema, *args):

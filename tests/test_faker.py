@@ -253,6 +253,14 @@ class TestFaker(unittest.TestCase):
     data = fake(schema.array.contains_many(schema.string('banana')).length(2))
     self.assertEqual(data, ['banana', 'banana'])
 
+    # unique
+    data = fake(schema.array([schema.boolean, schema.boolean]).unique)
+    self.assertIn(True, data)
+    self.assertIn(False, data)
+
+    data = fake(schema.array.unique)
+    self.assertEqual(len(set(data)), len(data))
+
     # length
     data = fake(schema.array.length(1))
     self.assertEqual(len(data), 1)
@@ -291,6 +299,10 @@ class TestFaker(unittest.TestCase):
     # items_schema
     data = fake(schema.array_of(schema.string('banana')))
     self.assertTrue(all(x == 'banana' for x in data))
+
+    # unique
+    data = fake(schema.array_of(schema.integer.between(0, 1)).length(2).unique)
+    self.assertEqual([0, 1], sorted(data))
     
     # length
     data = fake(schema.array_of(schema.array).length(5))
