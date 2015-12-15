@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
   name='blahblah',
-  version='0.5.7',
+  version='0.5.8',
   description='Fake data generator for district42 schema',
   url='https://github.com/nikitanovosibirsk/blahblah',
   author='Nikita Tsvetkov',
