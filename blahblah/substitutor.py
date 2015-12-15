@@ -1,4 +1,5 @@
 from copy import deepcopy
+import delorean
 import district42.json_schema
 
 
@@ -45,7 +46,7 @@ class Substitutor(district42.json_schema.AbstractVisitor):
     return self.__visit_valuable(schema, value)
 
   def visit_timestamp(self, schema, value):
-    return self.__visit_valuable(schema, value)
+    return self.__visit_valuable(schema, delorean.parse(value))
 
   def visit_array(self, schema, items):
     array_items = []

@@ -26,7 +26,6 @@ class TestSubstitution(SubstitutionTestCase):
 
   def test_timestamp_type_substitution(self):
     self.assertSchemaCloned(schema.timestamp, '21-10-2015 04:29 pm')
-    self.assertSchemaHasValue(schema.timestamp, '21-10-2015 04:29 pm')
 
   def test_array_type_substitution(self):
     self.assertSchemaCloned(schema.array, [1, 2, 3])
