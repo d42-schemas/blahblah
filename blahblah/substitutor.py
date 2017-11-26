@@ -1,6 +1,9 @@
 from copy import deepcopy
+
 import delorean
 import district42.json_schema
+
+from .errors import SubstitutionError
 
 
 class Substitutor(district42.json_schema.AbstractVisitor):
@@ -49,9 +52,13 @@ class Substitutor(district42.json_schema.AbstractVisitor):
     return self.__visit_valuable(schema, delorean.parse(value))
 
   def visit_array(self, schema, items):
+    if 'items' not in schema._params:
+      raise SubstitutionError('{} must have at least one element'.format(schema))
+
     array_items = []
-    for item in items:
-      array_items += [self.__determine_type(item) % item]
+    for idx, item in enumerate(schema._params['items']):
+      array_items += [item % items[idx]]
+
     return district42.json_schema.array(array_items)
 
   def visit_array_of(self, schema, items):

@@ -1,4 +1,5 @@
 import unittest
+
 import blahblah
 import district42.json_schema as schema
 from substitution_testcase import SubstitutionTestCase
@@ -30,6 +31,27 @@ class TestSubstitution(SubstitutionTestCase):
   def test_array_type_substitution(self):
     self.assertSchemaCloned(schema.array, [1, 2, 3])
     self.assertIsInstance(schema.array % [1, 2, 3], schema.types.Array)
+
+  def test_array_type_object_substitution(self):
+    object_schema = schema.object({'id': schema.integer})
+
+    array1_schema = schema.array([object_schema])
+    substituted_array1_schema = array1_schema % [{'id': 1}]
+    self.assertEqual(len(substituted_array1_schema._params['items']), 1)
+
+    array2_schema = schema.array([object_schema, object_schema])
+    substituted_array2_schema = array2_schema % [{'id': 1}, {'id': 2}]
+    self.assertEqual(len(substituted_array2_schema._params['items']), 2)
+
+    with self.assertRaises(IndexError):
+      array2_schema % [{'id': 1}]
+
+    substituted_array2_schema = array2_schema % [{'id': 1}, {'id': 2}, {'id': 3}]
+    self.assertEqual(len(substituted_array2_schema._params['items']), 2)
+
+    array0_schema = schema.array
+    with self.assertRaises(blahblah.SubstitutionError):
+      array0_schema % [{'id': 1}]
 
   def test_array_of_type_substitution(self):
     self.assertSchemaCloned(schema.array_of(schema.integer), [1, 2, 3])
@@ -87,7 +109,3 @@ class TestSubstitution(SubstitutionTestCase):
     value = 'true'
     self.assertIsInstance(true_of_false % value, schema.types.String)
     self.assertSchemaHasValue(true_of_false % value, value)
-
-
-if __name__ == '__main__':
-  unittest.main()

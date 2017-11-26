@@ -1,4 +1,5 @@
 import unittest
+
 import district42.json_schema as schema
 from blahblah import fake
 
@@ -415,7 +416,3 @@ class TestFaker(unittest.TestCase):
   def test_undefined_type_generator(self):
     with self.assertRaises(NotImplementedError):
       fake(schema.undefined)
-
-
-if __name__ == '__main__':
-  unittest.main()

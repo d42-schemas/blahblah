@@ -1,9 +1,10 @@
 import random
 import string
-import exrex
-import district42.json_schema
-from time import time
 from datetime import datetime
+from time import time
+
+import district42.json_schema
+import exrex
 
 
 class Faker(district42.json_schema.AbstractVisitor):
