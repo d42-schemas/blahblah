@@ -52,28 +52,41 @@ class Substitutor(district42.json_schema.AbstractVisitor):
     return self.__visit_valuable(schema, delorean.parse(value))
 
   def visit_array(self, schema, items):
-    if 'items' not in schema._params:
-      raise SubstitutionError('{} must have at least one element'.format(schema))
-
     array_items = []
-    for idx, item in enumerate(schema._params['items']):
-      array_items += [item % items[idx]]
+
+    if 'items' in schema._params:
+      for idx, item in enumerate(schema._params['items']):
+        array_items += [item % items[idx]]
+    else:
+      for item in items:
+        array_items += [district42.json_schema.from_native(item)]
 
     return district42.json_schema.array(array_items)
 
   def visit_array_of(self, schema, items):
-    return self.visit_array(schema, items)
+    array_items = []
+
+    for item in items:
+      array_items += [schema._params['items_schema'] % item]
+
+    return district42.json_schema.array(array_items)
 
   def visit_object(self, schema, keys):
-    clone = deepcopy(schema)
-    for key in clone._params['keys']:
-      if key not in keys: continue
-      if self.__is_undefined(clone._params['keys'][key]):
-        clone._params['keys'][key] = self.__determine_type(keys[key])
-      if not self.__is_required(clone._params['keys'][key]):
-        clone._params['keys'][key]._params['required'] = True
-      clone._params['keys'][key] %= keys[key]
-    return clone
+    if 'keys' in schema._params:
+      clone = district42.json_schema.object(deepcopy(schema._params['keys']))
+      for key in clone._params['keys']:
+        if key not in keys: continue
+        if self.__is_undefined(clone._params['keys'][key]):
+          clone._params['keys'][key] = self.__determine_type(keys[key])
+        if not self.__is_required(clone._params['keys'][key]):
+          clone._params['keys'][key]._params['required'] = True
+        clone._params['keys'][key] %= keys[key]
+      return clone
+
+    object_keys = {}
+    for key, val in keys.items():
+      object_keys[key] = district42.json_schema.from_native(val)
+    return district42.json_schema.object(object_keys)
 
   def visit_any(self, schema, value):
     return self.__determine_type(value) % value

@@ -20,3 +20,10 @@ fake(schema.array_of(schema.integer).length(1))
 ```sh
 $ pip3 install blahblah
 ```
+
+### Tests
+
+```sh
+$ python3 setup.py install
+$ python3 -m unittest tests
+```
