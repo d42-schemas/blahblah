@@ -8,7 +8,14 @@ from .errors import SubstitutionError
 
 class Substitutor(district42.json_schema.AbstractVisitor):
 
+  def __visit_nullable(self, schema):
+    if 'nullable' in schema._params:
+      return district42.json_schema.null
+    raise SubstitutionError('{} is not nullable'.format(schema))
+
   def __visit_valuable(self, schema, value):
+    if value is None:
+      return self.__visit_nullable(schema)
     clone = deepcopy(schema)
     clone._params['value'] = value
     return clone
@@ -52,6 +59,9 @@ class Substitutor(district42.json_schema.AbstractVisitor):
     return self.__visit_valuable(schema, delorean.parse(value))
 
   def visit_array(self, schema, items):
+    if items is None:
+      return self.__visit_nullable(schema)
+
     array_items = []
 
     if 'items' in schema._params:
@@ -64,6 +74,9 @@ class Substitutor(district42.json_schema.AbstractVisitor):
     return district42.json_schema.array(array_items)
 
   def visit_array_of(self, schema, items):
+    if items is None:
+      return self.__visit_nullable(schema)
+
     array_items = []
 
     for item in items:
@@ -72,6 +85,9 @@ class Substitutor(district42.json_schema.AbstractVisitor):
     return district42.json_schema.array(array_items)
 
   def visit_object(self, schema, keys):
+    if keys is None:
+      return self.__visit_nullable(schema)
+
     if 'keys' in schema._params:
       clone = district42.json_schema.object(deepcopy(schema._params['keys']))
       for key in clone._params['keys']:

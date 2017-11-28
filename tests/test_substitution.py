@@ -127,3 +127,35 @@ class TestSubstitution(SubstitutionTestCase):
 
   def test_undefined_type_substitution(self):
     self.assertSchemaCloned(schema.undefined, None)
+
+  def test_nullable_type_substitution(self):
+    # valuable
+    self.assertSchemaCloned(schema.string.nullable, None)
+    self.assertSchemaHasValue(schema.string.nullable % 'banana', 'banana')
+    self.assertIsInstance(schema.string.nullable % None, type(schema.null))
+    self.assertIsInstance(schema.string('banana').nullable % None, type(schema.null))
+    with self.assertRaises(blahblah.errors.SubstitutionError):
+      schema.string % None
+
+    # array
+    self.assertSchemaCloned(schema.array.nullable, None)
+    self.assertSchemaHasValue(schema.array.nullable % [], [])
+    self.assertIsInstance(schema.array.nullable % None, type(schema.null))
+    self.assertIsInstance(schema.array([]).nullable % None, type(schema.null))
+    with self.assertRaises(blahblah.errors.SubstitutionError):
+      schema.array % None
+
+    # array_of
+    self.assertSchemaCloned(schema.array_of(schema.integer).nullable, None)
+    self.assertSchemaHasValue(schema.array_of(schema.integer).nullable % [1], [1])
+    self.assertIsInstance(schema.array_of(schema.integer).nullable % None, type(schema.null))
+    with self.assertRaises(blahblah.errors.SubstitutionError):
+      schema.array_of(schema.integer) % None
+
+    # object
+    self.assertSchemaCloned(schema.object.nullable, None)
+    self.assertSchemaHasValue(schema.object.nullable % {}, {})
+    self.assertIsInstance(schema.object.nullable % None, type(schema.null))
+    self.assertIsInstance(schema.object({}).nullable % None, type(schema.null))
+    with self.assertRaises(blahblah.errors.SubstitutionError):
+      schema.object % None
