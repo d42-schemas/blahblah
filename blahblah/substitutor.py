@@ -100,5 +100,5 @@ class Substitutor(district42.json_schema.AbstractVisitor):
   def visit_enum(self, schema, value):
     return self.__determine_type(value) % value
 
-  def visit_undefined(self, schema):
-    raise NotImplementedError()
+  def visit_undefined(self, schema, ignored_value):
+    return deepcopy(schema)

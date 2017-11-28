@@ -124,3 +124,6 @@ class TestSubstitution(SubstitutionTestCase):
     true_of_false = schema.enum('true', 'false')
     value = 'true'
     self.assertSchemaHasValue(true_of_false % value, value)
+
+  def test_undefined_type_substitution(self):
+    self.assertSchemaCloned(schema.undefined, None)
