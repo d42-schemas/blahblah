@@ -1,7 +1,7 @@
 import unittest
 
-import district42.json_schema as schema
 from blahblah import fake
+from district42 import json_schema as schema
 
 
 class TestFaker(unittest.TestCase):

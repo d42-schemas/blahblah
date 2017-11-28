@@ -5,7 +5,7 @@ Fake data generator for [district42](https://github.com/nikitanovosibirsk/distri
 ### Usage
 
 ```python
-import district42.json_schema as schema
+from district42 import json_schema as schema
 from blahblah import fake
 
 fake(schema.string.numeric)

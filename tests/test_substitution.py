@@ -1,7 +1,7 @@
 import unittest
 
 import blahblah
-import district42.json_schema as schema
+from district42 import json_schema as schema
 
 from .substitution_testcase import SubstitutionTestCase
 
@@ -33,7 +33,7 @@ class TestSubstitution(SubstitutionTestCase):
     self.assertSchemaCloned(schema.array, [1, 2, 3])
     self.assertIsInstance(schema.array % [1, 2, 3], schema.types.Array)
 
-    array_value = [None, 0, 3.14, 'banana', [], {}] # complex object
+    array_value = [None, 0, 3.14, 'banana', [], {}]
     self.assertSchemaHasValue(schema.array % array_value, array_value)
 
   def test_array_type_object_substitution(self):
