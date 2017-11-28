@@ -7,7 +7,7 @@ from .substitution_testcase import SubstitutionTestCase
 
 
 class TestSubstitution(SubstitutionTestCase):
-  
+
   def test_null_type_substitution(self):
     self.assertSchemaCloned(schema.null, None)
 
@@ -93,69 +93,45 @@ class TestSubstitution(SubstitutionTestCase):
 
     self.assertEqual(
       len((schema.object % object_value)._params),
-      len((schema.object.empty.nullable % object_value)._params)
+      len((schema.object.empty % object_value)._params)
     )
 
   def test_any_type_substitution(self):
     self.assertSchemaCloned(schema.any, 'banana')
-    self.assertIsInstance(schema.any.nullable % None, schema.types.Null)
     self.assertIsInstance(schema.any % True, schema.types.Boolean)
     self.assertIsInstance(schema.any % 42, schema.types.Number)
     self.assertIsInstance(schema.any % 3.14, schema.types.Number)
     self.assertIsInstance(schema.any % '', schema.types.String)
 
   def test_any_of_type_substitution(self):
-    self.assertSchemaCloned(schema.any_of(schema.boolean(False), schema.array), False)
+    self.assertSchemaCloned(schema.any_of(schema.boolean, schema.array), False)
 
     integer_or_numeric = schema.any_of(schema.integer, schema.string.numeric)
     value = '1234'
     self.assertSchemaHasValue(integer_or_numeric % value, value)
 
+    with self.assertRaises(blahblah.errors.SubstitutionError):
+      schema.one_of(schema.boolean, schema.integer) % 'banana'
+
   def test_one_of_type_substitution(self):
-    self.assertSchemaCloned(schema.one_of(schema.boolean(False), schema.array), False)
+    self.assertSchemaCloned(schema.one_of(schema.boolean, schema.array), False)
 
     integer_or_numeric = schema.one_of(schema.integer, schema.string.numeric)
     value = '1234'
     self.assertSchemaHasValue(integer_or_numeric % value, value)
 
+    with self.assertRaises(blahblah.errors.SubstitutionError):
+      schema.one_of(schema.boolean, schema.integer) % 'banana'
+
   def test_enum_type_substitution(self):
     self.assertSchemaCloned(schema.enum(1, 2, 3), 1)
 
-    true_of_false = schema.enum('true', 'false')
+    true_or_false = schema.enum('true', 'false')
     value = 'true'
-    self.assertSchemaHasValue(true_of_false % value, value)
+    self.assertSchemaHasValue(true_or_false % value, value)
+
+    with self.assertRaises(blahblah.errors.SubstitutionError):
+      schema.enum(1, 2) % 3
 
   def test_undefined_type_substitution(self):
     self.assertSchemaCloned(schema.undefined, None)
-
-  def test_nullable_type_substitution(self):
-    # valuable
-    self.assertSchemaCloned(schema.string.nullable, None)
-    self.assertSchemaHasValue(schema.string.nullable % 'banana', 'banana')
-    self.assertIsInstance(schema.string.nullable % None, type(schema.null))
-    self.assertIsInstance(schema.string('banana').nullable % None, type(schema.null))
-    with self.assertRaises(blahblah.errors.SubstitutionError):
-      schema.string % None
-
-    # array
-    self.assertSchemaCloned(schema.array.nullable, None)
-    self.assertSchemaHasValue(schema.array.nullable % [], [])
-    self.assertIsInstance(schema.array.nullable % None, type(schema.null))
-    self.assertIsInstance(schema.array([]).nullable % None, type(schema.null))
-    with self.assertRaises(blahblah.errors.SubstitutionError):
-      schema.array % None
-
-    # array_of
-    self.assertSchemaCloned(schema.array_of(schema.integer).nullable, None)
-    self.assertSchemaHasValue(schema.array_of(schema.integer).nullable % [1], [1])
-    self.assertIsInstance(schema.array_of(schema.integer).nullable % None, type(schema.null))
-    with self.assertRaises(blahblah.errors.SubstitutionError):
-      schema.array_of(schema.integer) % None
-
-    # object
-    self.assertSchemaCloned(schema.object.nullable, None)
-    self.assertSchemaHasValue(schema.object.nullable % {}, {})
-    self.assertIsInstance(schema.object.nullable % None, type(schema.null))
-    self.assertIsInstance(schema.object({}).nullable % None, type(schema.null))
-    with self.assertRaises(blahblah.errors.SubstitutionError):
-      schema.object % None

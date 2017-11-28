@@ -105,16 +105,28 @@ class Substitutor(district42.json_schema.AbstractVisitor):
     return district42.json_schema.object(object_keys)
 
   def visit_any(self, schema, value):
-    return self.__determine_type(value) % value
+    if value is None:
+      return self.__visit_nullable(schema)
+    return district42.json_schema.from_native(value)
 
   def visit_any_of(self, schema, value):
-    return self.__determine_type(value) % value
+    substituted = district42.json_schema.from_native(value)
+    error = district42.helpers.check_type(substituted, [type(x) for x in schema._params['options']])
+    if error:
+      raise SubstitutionError(error)
+    return substituted
 
   def visit_one_of(self, schema, value):
-    return self.__determine_type(value) % value
+    substituted = district42.json_schema.from_native(value)
+    error = district42.helpers.check_type(substituted, [type(x) for x in schema._params['options']])
+    if error:
+      raise SubstitutionError(error)
+    return substituted
 
   def visit_enum(self, schema, value):
-    return self.__determine_type(value) % value
+    if value not in schema._params['enumerators']:
+      raise SubstitutionError('"{}" is not present in the original enumeration'.format(value))
+    return district42.json_schema.from_native(value)
 
   def visit_undefined(self, schema, ignored_value):
     return deepcopy(schema)
