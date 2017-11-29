@@ -20,28 +20,8 @@ class Substitutor(district42.json_schema.AbstractVisitor):
     clone._params['value'] = value
     return clone
 
-  def __determine_type(self, value):
-    value_type = type(value)
-    if value_type is bool:
-      return district42.json_schema.boolean
-    elif value_type is int:
-      return district42.json_schema.integer
-    elif value_type is float:
-      return district42.json_schema.float
-    elif value_type is str:
-      return district42.json_schema.string
-    elif value_type is list:
-      return district42.json_schema.array
-    elif value_type is dict:
-      return district42.json_schema.object
-    else:
-      return district42.json_schema.null
-
   def __is_required(self, schema):
     return 'required' not in schema._params or schema._params['required']
-
-  def __is_undefined(self, schema):
-    return type(schema) is district42.json_schema.types.Undefined
 
   def visit_null(self, schema, *args):
     return deepcopy(schema)
@@ -92,8 +72,6 @@ class Substitutor(district42.json_schema.AbstractVisitor):
       clone = district42.json_schema.object(deepcopy(schema._params['keys']))
       for key in clone._params['keys']:
         if key not in keys: continue
-        if self.__is_undefined(clone._params['keys'][key]):
-          clone._params['keys'][key] = self.__determine_type(keys[key])
         if not self.__is_required(clone._params['keys'][key]):
           clone._params['keys'][key]._params['required'] = True
         clone._params['keys'][key] %= keys[key]

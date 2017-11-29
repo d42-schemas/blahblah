@@ -28,5 +28,3 @@ class SubstitutionTestCase(unittest.TestCase):
       return self.assertArrayHasItems(substituted, value)
     elif 'keys' in substituted._params:
       return self.assertObjectHasKeys(substituted, value)
-    elif 'options' in substituted._params or 'enumerators' in substituted._params:
-      raise NotImplementedError()
