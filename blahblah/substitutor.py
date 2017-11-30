@@ -2,6 +2,7 @@ from copy import deepcopy
 
 import delorean
 import district42.json_schema
+from district42.errors import DeclarationError
 
 from .errors import SubstitutionError
 
@@ -14,29 +15,38 @@ class Substitutor(district42.json_schema.AbstractVisitor):
     raise SubstitutionError('{} is not nullable'.format(schema))
 
   def __visit_valuable(self, schema, value):
-    if value is None:
-      return self.__visit_nullable(schema)
-    clone = deepcopy(schema)
-    clone._params['value'] = value
-    return clone
+    try:
+      return deepcopy(schema).val(value)
+    except DeclarationError as e:
+      raise SubstitutionError(e) from e
 
   def __is_required(self, schema):
     return 'required' not in schema._params or schema._params['required']
 
-  def visit_null(self, schema, *args):
+  def visit_null(self, schema, value):
+    if value is not None:
+      raise SubstitutionError('"{}" is not null'.format(value))
     return deepcopy(schema)
 
   def visit_boolean(self, schema, value):
+    if value is None:
+      return self.__visit_nullable(schema)
     return self.__visit_valuable(schema, value)
 
   def visit_number(self, schema, value):
+    if value is None:
+      return self.__visit_nullable(schema)
     return self.__visit_valuable(schema, value)
 
   def visit_string(self, schema, value):
+    if value is None:
+      return self.__visit_nullable(schema)
     return self.__visit_valuable(schema, value)
 
   def visit_timestamp(self, schema, value):
-    return self.__visit_valuable(schema, delorean.parse(value))
+    if value is None:
+      return self.__visit_nullable(schema)
+    return self.__visit_valuable(schema, value)
 
   def visit_array(self, schema, items):
     if items is None:
