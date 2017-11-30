@@ -1,4 +1,5 @@
 import unittest
+import warnings
 
 import blahblah
 from district42 import json_schema as schema
@@ -8,9 +9,12 @@ from .substitution_testcase import SubstitutionTestCase
 
 class TestNullableSubstitution(SubstitutionTestCase):
 
+  def setUp(self):
+    warnings.simplefilter('ignore')
+
   def test_null_type_substitution(self):
-      self.assertIsInstance(schema.null % None, schema.types.Null)
- 
+    self.assertIsInstance(schema.null % None, schema.types.Null)
+
   def test_nullable_valuable_type_substitution(self):
     self.assertSchemaCloned(schema.string.nullable, None)
     self.assertSchemaHasValue(schema.string.nullable % 'banana', 'banana')
@@ -52,6 +56,10 @@ class TestNullableSubstitution(SubstitutionTestCase):
       schema.any_of(schema.string.numeric, schema.integer, schema.null) % None,
       schema.types.Null
     )
+    self.assertIsInstance(
+      schema.any_of(schema.string.numeric, schema.integer).nullable % None,
+      schema.types.Null
+    )
     with self.assertRaises(blahblah.errors.SubstitutionError):
       schema.any_of(schema.string.numeric, schema.integer) % None
 
@@ -60,12 +68,20 @@ class TestNullableSubstitution(SubstitutionTestCase):
       schema.one_of(schema.string.numeric, schema.integer, schema.null) % None,
       schema.types.Null
     )
+    self.assertIsInstance(
+      schema.one_of(schema.string.numeric, schema.integer).nullable % None,
+      schema.types.Null
+    )
     with self.assertRaises(blahblah.errors.SubstitutionError):
       schema.one_of(schema.string.numeric, schema.integer) % None
 
   def test_nullable_enum_type_substitution(self):
     self.assertIsInstance(
       schema.enum(0, 1, None) % None,
+      schema.types.Null
+    )
+    self.assertIsInstance(
+      schema.enum(0, 1).nullable % None,
       schema.types.Null
     )
     with self.assertRaises(blahblah.errors.SubstitutionError):

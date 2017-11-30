@@ -1,4 +1,5 @@
 import unittest
+import warnings
 
 import blahblah
 from district42 import json_schema as schema
@@ -18,6 +19,16 @@ class TestSubstitution(SubstitutionTestCase):
     self.assertSchemaHasValue(schema.boolean % True, True)
     with self.assertRaises(blahblah.errors.SubstitutionError):
       schema.boolean % 'banana'
+
+  def test_number_type_substitution(self):
+    with warnings.catch_warnings():
+      warnings.simplefilter('ignore')
+      self.assertSchemaCloned(schema.number, 42)
+      self.assertSchemaHasValue(schema.number % 42, 42)
+      self.assertSchemaCloned(schema.number, 3.14)
+      self.assertSchemaHasValue(schema.number % 3.14, 3.14)
+      with self.assertRaises(blahblah.errors.SubstitutionError):
+        schema.number % 'banana'
 
   def test_integer_type_substitution(self):
     self.assertSchemaCloned(schema.integer, 42)
@@ -70,6 +81,12 @@ class TestSubstitution(SubstitutionTestCase):
     self.assertSchemaCloned(schema.array.of(schema.integer), [1, 2, 3])
     self.assertIsInstance(schema.array.of(schema.integer) % [1, 2, 3], schema.types.Array)
     self.assertSchemaHasValue(schema.array.of(schema.integer) % [1, 2, 3], [1, 2, 3])
+
+    with warnings.catch_warnings():
+      warnings.simplefilter('ignore')
+      self.assertSchemaCloned(schema.array_of(schema.integer), [1, 2, 3])
+      self.assertIsInstance(schema.array_of(schema.integer) % [1, 2, 3], schema.types.Array)
+      self.assertSchemaHasValue(schema.array_of(schema.integer) % [1, 2, 3], [1, 2, 3])
 
   def test_array_of_object_type_substitution(self):
     object_schema = schema.object({
