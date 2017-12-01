@@ -175,6 +175,9 @@ class TestSubstitution(SubstitutionTestCase):
     self.assertIsInstance(schema.any % 3.14, schema.types.Number)
     self.assertIsInstance(schema.any % '', schema.types.String)
 
+    with self.assertRaises(blahblah.errors.SubstitutionError):
+      schema.any % SubstitutionTestCase
+
   def test_any_of_type_substitution(self):
     self.assertSchemaCloned(schema.any_of(schema.boolean, schema.array), False)
 

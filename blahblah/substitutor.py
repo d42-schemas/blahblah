@@ -106,7 +106,10 @@ class Substitutor(district42.json_schema.AbstractVisitor):
   def visit_any(self, schema, value):
     if value is None:
       return self.__visit_nullable(schema)
-    return district42.json_schema.from_native(value)
+    try:
+      return district42.json_schema.from_native(value)
+    except DeclarationError as e:
+      raise SubstitutionError(e) from e
 
   def visit_any_of(self, schema, value):
     substituted = district42.json_schema.from_native(value)
