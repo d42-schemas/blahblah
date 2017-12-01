@@ -95,12 +95,13 @@ class Substitutor(district42.json_schema.AbstractVisitor):
         if not self.__is_required(clone._params['keys'][key]):
           clone._params['keys'][key]._params['required'] = True
         clone._params['keys'][key] %= keys[key]
-      return clone
+      return clone.strict if 'strict' in schema._params else clone
 
     object_keys = {}
     for key, val in keys.items():
       object_keys[key] = district42.json_schema.from_native(val)
-    return district42.json_schema.object(object_keys)
+    substituted = district42.json_schema.object(object_keys)
+    return substituted.strict if 'strict' in schema._params else substituted
 
   def visit_any(self, schema, value):
     if value is None:

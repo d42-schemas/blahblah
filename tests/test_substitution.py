@@ -140,6 +140,34 @@ class TestSubstitution(SubstitutionTestCase):
     with self.assertRaises(blahblah.errors.SubstitutionError):
       schema.object % []
 
+  def test_object_type_nested_substitution(self):
+    object_schema = schema.object({
+      'id': schema.integer,
+      'object': schema.object({
+        'id': schema.string.numeric,
+        'type': schema.string.non_empty,
+        'target': schema.object.strict.nullable
+      }).strict,
+      'is_deleted': schema.boolean
+    }).strict
+    keys = {
+      'id': 1,
+      'object': {
+        'id': '1',
+        'target': {}
+      }
+    }
+
+    substituted = object_schema % keys
+    self.assertSchemaHasValue(substituted, keys)
+
+    self.assertIn('strict', substituted._params)
+    self.assertIn('strict', substituted['object']._params)
+    self.assertIn('strict', substituted['object']['target']._params)
+
+    self.assertIn('type', substituted['object'])
+    self.assertIn('is_deleted', substituted)
+
   def test_any_type_substitution(self):
     self.assertSchemaCloned(schema.any, 'banana')
     self.assertIsInstance(schema.any % True, schema.types.Boolean)
