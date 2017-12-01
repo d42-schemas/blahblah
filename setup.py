@@ -14,6 +14,6 @@ setup(
     'exrex==0.9.4'
   ],
   dependency_links=[
-    'https://github.com/nikitanovosibirsk/district42/tarball/41efc1348be6720b844ccf250f5f08f215aa4869#egg=district42-0.6.1'
+    'https://github.com/nikitanovosibirsk/district42/tarball/19cda359f4a356c9ead02f9f951e24a233242fef#egg=district42-0.6.1'
   ]
 )

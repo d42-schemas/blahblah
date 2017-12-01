@@ -16,7 +16,7 @@ class Substitutor(district42.json_schema.AbstractVisitor):
 
   def __visit_valuable(self, schema, value):
     try:
-      return deepcopy(schema).val(value)
+      return type(schema)().val(value)
     except DeclarationError as e:
       raise SubstitutionError(e) from e
 
@@ -52,8 +52,11 @@ class Substitutor(district42.json_schema.AbstractVisitor):
     if items is None:
       return self.__visit_nullable(schema)
 
-    array_items = []
+    error = district42.helpers.check_type(items, [list])
+    if error:
+      raise SubstitutionError(error)
 
+    array_items = []
     if 'items' in schema._params:
       for idx, item in enumerate(schema._params['items']):
         array_items += [item % items[idx]]
@@ -67,8 +70,11 @@ class Substitutor(district42.json_schema.AbstractVisitor):
     if items is None:
       return self.__visit_nullable(schema)
 
-    array_items = []
+    error = district42.helpers.check_type(items, [list])
+    if error:
+      raise SubstitutionError(error)
 
+    array_items = []
     for item in items:
       array_items += [schema._params['items_schema'] % item]
 
@@ -77,6 +83,10 @@ class Substitutor(district42.json_schema.AbstractVisitor):
   def visit_object(self, schema, keys):
     if keys is None:
       return self.__visit_nullable(schema)
+
+    error = district42.helpers.check_type(keys, [dict])
+    if error:
+      raise SubstitutionError(error)
 
     if 'keys' in schema._params:
       clone = district42.json_schema.object(deepcopy(schema._params['keys']))

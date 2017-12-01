@@ -60,6 +60,14 @@ class TestSubstitution(SubstitutionTestCase):
     array_value = [None, 0, 3.14, 'banana', [], {}]
     self.assertSchemaHasValue(schema.array % array_value, array_value)
 
+    self.assertSchemaHasValue(schema.array([schema.integer]) % [1], [1])
+
+    with self.assertRaises(blahblah.errors.SubstitutionError):
+      schema.array % 'banana'
+
+    with self.assertRaises(blahblah.errors.SubstitutionError):
+      schema.array([schema.string.numeric]) % [1]
+
   def test_array_type_object_substitution(self):
     object_schema = schema.object({'id': schema.integer})
 
@@ -81,6 +89,9 @@ class TestSubstitution(SubstitutionTestCase):
     self.assertSchemaCloned(schema.array.of(schema.integer), [1, 2, 3])
     self.assertIsInstance(schema.array.of(schema.integer) % [1, 2, 3], schema.types.Array)
     self.assertSchemaHasValue(schema.array.of(schema.integer) % [1, 2, 3], [1, 2, 3])
+
+    with self.assertRaises(blahblah.errors.SubstitutionError):
+      schema.array.of(schema.string) % 'banana'
 
     with warnings.catch_warnings():
       warnings.simplefilter('ignore')
@@ -126,6 +137,9 @@ class TestSubstitution(SubstitutionTestCase):
       len((schema.object.empty % object_value)._params)
     )
 
+    with self.assertRaises(blahblah.errors.SubstitutionError):
+      schema.object % []
+
   def test_any_type_substitution(self):
     self.assertSchemaCloned(schema.any, 'banana')
     self.assertIsInstance(schema.any % True, schema.types.Boolean)
@@ -141,7 +155,7 @@ class TestSubstitution(SubstitutionTestCase):
     self.assertSchemaHasValue(integer_or_numeric % value, value)
 
     with self.assertRaises(blahblah.errors.SubstitutionError):
-      schema.one_of(schema.boolean, schema.integer) % 'banana'
+      schema.any_of(schema.boolean, schema.integer) % 'banana'
 
   def test_one_of_type_substitution(self):
     self.assertSchemaCloned(schema.one_of(schema.boolean, schema.array), False)
