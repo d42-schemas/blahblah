@@ -168,6 +168,25 @@ class TestSubstitution(SubstitutionTestCase):
     self.assertIn('type', substituted['object'])
     self.assertIn('is_deleted', substituted)
 
+  def test_object_type_dotted_substitution(self):
+    object_schema = schema.object({
+      'id': schema.integer,
+      'object': schema.object({
+        'id': schema.string.numeric,
+        'type': schema.string.non_empty,
+        'target': schema.object.strict.nullable
+      }).strict,
+      'is_deleted': schema.boolean
+    }).strict
+    keys = {
+      'id': 1,
+      'object.id': '1',
+      'object.target': {}
+    }
+
+    substituted = object_schema % keys
+    self.assertSchemaHasValue(substituted, keys)
+
   def test_any_type_substitution(self):
     self.assertSchemaCloned(schema.any, 'banana')
     self.assertIsInstance(schema.any % True, schema.types.Boolean)

@@ -3,6 +3,7 @@ from copy import deepcopy
 import delorean
 import district42.json_schema
 from district42.errors import DeclarationError
+from district42.helpers import roll_out
 
 from .errors import SubstitutionError
 
@@ -88,17 +89,18 @@ class Substitutor(district42.json_schema.AbstractVisitor):
     if error:
       raise SubstitutionError(error)
 
+    rolled_keys = roll_out(keys)
     if 'keys' in schema._params:
       clone = district42.json_schema.object(deepcopy(schema._params['keys']))
       for key in clone._params['keys']:
-        if key not in keys: continue
+        if key not in rolled_keys: continue
         if not self.__is_required(clone._params['keys'][key]):
           clone._params['keys'][key]._params['required'] = True
-        clone._params['keys'][key] %= keys[key]
+        clone._params['keys'][key] %= rolled_keys[key]
       return clone.strict if 'strict' in schema._params else clone
 
     object_keys = {}
-    for key, val in keys.items():
+    for key, val in rolled_keys.items():
       object_keys[key] = district42.json_schema.from_native(val)
     substituted = district42.json_schema.object(object_keys)
     return substituted.strict if 'strict' in schema._params else substituted
