@@ -177,7 +177,7 @@ class TestFaker(unittest.TestCase):
     # numeric
     data = fake(schema.string.numeric)
     self.assertIsInstance(data, str)
-    self.assertRegex(data, r'^[\-0-9]*$')
+    self.assertRegex(data, r'^\-?[0-9]+$')
 
     # numeric min
     data = fake(schema.string.numeric(2147483647 - 1))
