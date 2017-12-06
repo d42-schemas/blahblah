@@ -177,8 +177,18 @@ class TestFaker(unittest.TestCase):
     # numeric
     data = fake(schema.string.numeric)
     self.assertIsInstance(data, str)
-    self.assertRegex(data, r'^[0-9]*$')
-    
+    self.assertRegex(data, r'^[\-0-9]*$')
+
+    # numeric min
+    data = fake(schema.string.numeric(2147483647 - 1))
+    self.assertIsInstance(data, str)
+    self.assertIn(data, ('2147483646', '2147483647'))
+
+    # numeric min max
+    data = fake(schema.string.numeric(0, 1))
+    self.assertIsInstance(data, str)
+    self.assertIn(data, ('0', '1'))
+
     # alphabetic
     data = fake(schema.string.alphabetic)
     self.assertRegex(data, r'^[a-zA-Z]*$')

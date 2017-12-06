@@ -130,7 +130,12 @@ class Faker(district42.json_schema.AbstractVisitor):
       return exrex.getone(schema._params['pattern'])
 
     if 'numeric' in schema._params:
-      return str(random.randint(0, 9223372036854775807))
+      min_value, max_value = -2147483648, 2147483647
+      if 'numeric_min' in schema._params:
+        min_value = schema._params['numeric_min']
+      if 'numeric_max' in schema._params:
+        max_value = schema._params['numeric_max']
+      return str(random.randint(min_value, max_value))
 
     length = self.__get_length(schema)
     alphabet = self.__get_alphabet(schema)

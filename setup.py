@@ -10,10 +10,10 @@ setup(
   license='MIT',
   packages=find_packages(),
   install_requires=[
-    'district42==0.6.1',
+    'district42==0.6.2',
     'exrex==0.9.4'
   ],
   dependency_links=[
-    'https://github.com/nikitanovosibirsk/district42/tarball/ccf5425ff30c94c830d3285e0ce071c07879126e#egg=district42-0.6.1'
+    'https://github.com/nikitanovosibirsk/district42/tarball/d445f0e57bfa8d37b6dd3428573832d150e6bc6c#egg=district42-0.6.1'
   ]
 )
