@@ -25,12 +25,15 @@ class Faker(district42.json_schema.AbstractVisitor):
       min_length = 1
     if 'contains_many' in schema._params:
       min_length = 2
+    if 'contains_all' in schema._params:
+      min_length = len(schema._params['contains_all'])
 
     if 'min_length' in schema._params:
       min_length = schema._params['min_length']
     if 'max_length' in schema._params:
       max_length = schema._params['max_length']
 
+    max_length = max([min_length, max_length])
     return random.randint(min_length, max_length)
 
   def __get_alphabet(self, schema):
@@ -183,8 +186,9 @@ class Faker(district42.json_schema.AbstractVisitor):
 
     length = self.__get_length(schema)
 
-    if 'contains_one' in schema._params:
-      array = [schema._params['contains_one'].accept(self)]
+    if ('contains_one' in schema._params) or ('contains_all' in schema._params):
+      items = schema._params.get('contains_all', [schema._params.get('contains_one', None)])
+      array = [item.accept(self) for item in items]
       while len(array) < length:
         primitive = random.choice(self.primitives).accept(self)
         if primitive not in array:

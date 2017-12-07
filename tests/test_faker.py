@@ -318,6 +318,13 @@ class TestFaker(unittest.TestCase):
     data = fake(schema.array.contains_many(schema.string('banana')).length(2))
     self.assertEqual(data, ['banana', 'banana'])
 
+    # contains_all
+    values = [True, False]
+    data = fake(schema.array.contains_all(schema.from_native(value) for value in values).length(3))
+    self.assertEqual(len(data), 3)
+    self.assertIn(True, data)
+    self.assertIn(False, data)
+
     # unique
     data = fake(schema.array([schema.boolean, schema.boolean]).unique)
     self.assertIn(True, data)
