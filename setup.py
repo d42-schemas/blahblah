@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
   name='blahblah',
-  version='0.6.1',
+  version='0.6.2',
   description='Fake data generator for district42 schema',
   url='https://github.com/nikitanovosibirsk/blahblah',
   author='Nikita Tsvetkov',
