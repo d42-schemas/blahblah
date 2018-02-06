@@ -1,7 +1,7 @@
 import unittest
 import warnings
 
-from blahblah import fake
+from blahblah import fake, SubstitutionError
 from district42 import json_schema as schema
 
 
@@ -26,7 +26,10 @@ class TestFaker(unittest.TestCase):
     # overriding
     data = fake(schema.boolean(False), True)
     self.assertTrue(data)
-    
+
+    with self.assertRaises(SubstitutionError):
+      fake(schema.boolean(False), 0)
+
     # example
     data = fake(schema.boolean.example(True))
     self.assertTrue(data)
@@ -55,6 +58,9 @@ class TestFaker(unittest.TestCase):
     # overriding
     data = fake(schema.integer(1), 42)
     self.assertEqual(data, 42)
+
+    with self.assertRaises(SubstitutionError):
+      fake(schema.integer(1), '42')
 
     # example
     data = fake(schema.integer.example(0))
@@ -114,6 +120,9 @@ class TestFaker(unittest.TestCase):
     data = fake(schema.float(1.0), 3.14)
     self.assertEqual(data, 3.14)
 
+    with self.assertRaises(SubstitutionError):
+      fake(schema.float(1.0), '3.14')
+
     # example
     data = fake(schema.float.example(3.14))
     self.assertEqual(data, 3.14)
@@ -164,6 +173,9 @@ class TestFaker(unittest.TestCase):
     # overriding
     data = fake(schema.string('cucumber'), 'banana')
     self.assertEqual(data, 'banana')
+
+    with self.assertRaises(SubstitutionError):
+      fake(schema.string('cucumber'), [])
 
     # example
     data = fake(schema.string.example(''))
@@ -267,8 +279,11 @@ class TestFaker(unittest.TestCase):
 
     # overriding
     data = fake(schema.timestamp, '21-10-2015 04:29 pm')
-    self.assertEqual(data, '21-10-2015 04:29 pm')
-    
+    self.assertEqual(data, '2015-10-21 16:29:00')
+
+    with self.assertRaises(SubstitutionError):
+      fake(schema.timestamp, 1)
+
     # example
     data = fake(schema.timestamp.example('01/01/2015'))
     self.assertEqual(data, '01/01/2015')
@@ -287,6 +302,9 @@ class TestFaker(unittest.TestCase):
     array = [0, 1]
     data = fake(schema.array([schema.integer, schema.integer]), array)
     self.assertEqual(data, array)
+
+    with self.assertRaises(SubstitutionError):
+      fake(schema.array([schema.integer, schema.integer]), ['1', '2'])
 
     # example
     examples = (['true', 'false'], ['false', 'true'])
@@ -360,8 +378,11 @@ class TestFaker(unittest.TestCase):
     self.assertTrue(all(isinstance(x, int) for x in data))
 
     # overriding
-    data = fake(schema.array.of(schema.integer), 0)
-    self.assertEqual(data, 0)
+    data = fake(schema.array.of(schema.integer), [0])
+    self.assertEqual(data, [0])
+
+    with self.assertRaises(SubstitutionError):
+      fake(schema.array.of(schema.integer), '[0]')
 
     # example
     example = ['banana', 'cucumber']
@@ -399,6 +420,29 @@ class TestFaker(unittest.TestCase):
     dictionary = {'id': 1}
     data = fake(schema.object({'id': schema.integer}), dictionary)
     self.assertEqual(data, dictionary)
+
+    data = fake(schema.object({'id?': schema.integer, 'name': schema.string}), {'id': 1})
+    self.assertEqual(data['id'], 1)
+    self.assertIn('name', data)
+    self.assertIsInstance(data['name'], str)
+
+    data = fake(schema.object({'id?': schema.integer, 'name': schema.string}), {'id'})
+    self.assertIn('id', data)
+    self.assertIsInstance(data['id'], int)
+    self.assertIn('name', data)
+    self.assertIsInstance(data['name'], str)
+
+    data = fake(schema.object({'id?': schema.integer, 'name': schema.string}), {'id', 'name'})
+    self.assertIn('id', data)
+    self.assertIsInstance(data['id'], int)
+    self.assertIn('name', data)
+    self.assertIsInstance(data['name'], str)
+
+    with self.assertRaises(NotImplementedError):
+      fake(schema.object({'id?': schema.undefined, 'name': schema.string}), {'id'})
+
+    with self.assertRaises(SubstitutionError):
+      fake(schema.object({'id': schema.integer}), {'id': '1'})
 
     # example
     example = {'id': 1, 'title': 'Title', 'rating': 5.0}
@@ -452,6 +496,9 @@ class TestFaker(unittest.TestCase):
     data = fake(schema.any, '42')
     self.assertEqual(data, '42')
 
+    with self.assertRaises(SubstitutionError):
+      fake(schema.any, unittest.TestCase)
+
   def test_any_of_type_generator(self):
     # options
     data = fake(schema.any_of(schema.integer(1), schema.integer(2)))
@@ -461,6 +508,9 @@ class TestFaker(unittest.TestCase):
     data = fake(schema.any_of(schema.integer, schema.string.numeric), '1')
     self.assertEqual(data, '1')
 
+    with self.assertRaises(SubstitutionError):
+      fake(schema.any_of(schema.integer, schema.string.numeric), True)
+
   def test_one_of_type_generator(self):
     # options
     data = fake(schema.one_of(schema.boolean, schema.integer(1), schema.integer(0)))
@@ -469,6 +519,9 @@ class TestFaker(unittest.TestCase):
     # overriding
     data = fake(schema.one_of(schema.string('true'), schema.string('false')), 'true')
     self.assertEqual(data, 'true')
+
+    with self.assertRaises(SubstitutionError):
+      fake(schema.one_of(schema.string('true'), schema.string('false')), True)
 
   def test_enum_type_generator(self):
     # enumerators
@@ -483,6 +536,9 @@ class TestFaker(unittest.TestCase):
     # overriding
     data = fake(schema.enum('true', 'false', True, False), 'true')
     self.assertEqual(data, 'true')
+
+    with self.assertRaises(SubstitutionError):
+      fake(schema.enum('true', 'false', True, False), '1')
 
   def test_undefined_type_generator(self):
     with self.assertRaises(NotImplementedError):

@@ -83,7 +83,8 @@ class Faker(district42.json_schema.AbstractVisitor):
     return None
 
   def visit_boolean(self, schema, *args):
-    if args: return args[0]
+    if args:
+      schema %= args[0]
 
     if 'value' in schema._params:
       return schema._params['value']
@@ -94,7 +95,8 @@ class Faker(district42.json_schema.AbstractVisitor):
     return random.choice((True, False))
 
   def visit_number(self, schema, *args):
-    if args: return args[0]
+    if args:
+      schema %= args[0]
 
     if 'value' in schema._params:
       return schema._params['value']
@@ -118,7 +120,8 @@ class Faker(district42.json_schema.AbstractVisitor):
     return random.randint(min_value, max_value)
 
   def visit_string(self, schema, *args):
-    if args: return args[0]
+    if args:
+      schema %= args[0]
 
     if 'value' in schema._params:
       return schema._params['value']
@@ -145,7 +148,8 @@ class Faker(district42.json_schema.AbstractVisitor):
     return ''.join([random.choice(alphabet) for x in range(length)])
 
   def visit_timestamp(self, schema, *args):
-    if args: return args[0]
+    if args:
+      schema %= args[0]
 
     if 'examples' in schema._params:
       return random.choice(schema._params['examples'])
@@ -170,7 +174,8 @@ class Faker(district42.json_schema.AbstractVisitor):
     return str(timestamp)
 
   def visit_array(self, schema, *args):
-    if args: return args[0]
+    if args:
+      schema %= args[0]
 
     if 'examples' in schema._params:
       return random.choice(schema._params['examples'])
@@ -219,7 +224,8 @@ class Faker(district42.json_schema.AbstractVisitor):
     return array + [random.choice(self.primitives).accept(self) for x in range(length)]
 
   def visit_array_of(self, schema, *args):
-    if args: return args[0]
+    if args:
+      return (schema % args[0]).accept(self, *args)
 
     if 'examples' in schema._params:
       return random.choice(schema._params['examples'])
@@ -239,13 +245,15 @@ class Faker(district42.json_schema.AbstractVisitor):
   def visit_object(self, schema, *args):
     if not args and 'examples' in schema._params:
       return random.choice(schema._params['examples'])
-    
+
     obj = {}
     if 'keys' in schema._params:
       for key, item_schema in schema._params['keys'].items():
         if args and key in args[0]:
-          if self.__is_undefined(item_schema):
+          if isinstance(args[0], dict) and self.__is_undefined(item_schema):
             obj[key] = args[0][key]
+          elif not isinstance(args[0], dict):
+            obj[key] = item_schema.accept(self)
           else:
             obj[key] = item_schema.accept(self, args[0][key])
         elif not self.__is_undefined(item_schema) and self.__is_required(item_schema):
@@ -261,19 +269,23 @@ class Faker(district42.json_schema.AbstractVisitor):
     return obj
 
   def visit_any(self, schema, *args):
-    if args: return args[0]
+    if args:
+      return (schema % args[0]).accept(self, *args)
     return random.choice(self.primitives).accept(self)
 
   def visit_any_of(self, schema, *args):
-    if args: return args[0]
+    if args:
+      return (schema % args[0]).accept(self, *args)
     return random.choice(schema._params['options']).accept(self)
 
   def visit_one_of(self, schema, *args):
-    if args: return args[0]
+    if args:
+      return (schema % args[0]).accept(self, *args)
     return random.choice(schema._params['options']).accept(self)
 
   def visit_enum(self, schema, *args):
-    if args: return args[0]
+    if args:
+      return (schema % args[0]).accept(self, *args)
     return random.choice(schema._params['enumerators'])
 
   def visit_undefined(self, schema, *args):
