@@ -136,11 +136,14 @@ class Substitutor(district42.json_schema.AbstractVisitor):
     return substituted
 
   def visit_enum(self, schema, value):
-    if value not in schema._params['enumerators']:
-      if value is None:
-        return self.__visit_nullable(schema)
-      raise SubstitutionError('"{}" is not present in the original enumeration'.format(value))
-    return district42.json_schema.from_native(value)
+    for enumerator in schema._params['enumerators']:
+      if type(enumerator) == type(value) and enumerator == value:
+        return district42.json_schema.from_native(value)
+
+    if value is None:
+      return self.__visit_nullable(schema)
+
+    raise SubstitutionError('"{}" is not present in the original enumeration'.format(value))
 
   def visit_undefined(self, schema, ignored_value):
     return deepcopy(schema)

@@ -225,6 +225,9 @@ class TestSubstitution(SubstitutionTestCase):
     self.assertSchemaHasValue(true_or_false % value, value)
 
     with self.assertRaises(blahblah.errors.SubstitutionError):
+      schema.enum(True, False) % 1
+
+    with self.assertRaises(blahblah.errors.SubstitutionError):
       schema.enum(1, 2) % 3
 
   def test_undefined_type_substitution(self):
