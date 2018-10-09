@@ -185,7 +185,11 @@ class TestFaker(unittest.TestCase):
     regex = r'[abc]+'
     data = fake(schema.string.pattern(regex))
     self.assertRegex(data, regex)
-    
+
+    # contains
+    data = fake(schema.string.contains('banana'))
+    self.assertIn('banana', data)
+
     # numeric
     data = fake(schema.string.numeric)
     self.assertIsInstance(data, str)

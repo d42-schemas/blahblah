@@ -145,6 +145,16 @@ class Faker(district42.json_schema.AbstractVisitor):
 
     length = self.__get_length(schema)
     alphabet = self.__get_alphabet(schema)
+
+    if 'contains' in schema._params:
+      substring = schema._params['contains']
+      length = max(length, len(substring))
+      res = ''.join([random.choice(alphabet) for x in range(length)])
+      if len(substring) == 0:
+        return res
+      offset = random.randint(0, len(res) - len(substring))
+      return res[0:offset] + substring + res[offset+len(substring):]
+
     return ''.join([random.choice(alphabet) for x in range(length)])
 
   def visit_timestamp(self, schema, *args):
