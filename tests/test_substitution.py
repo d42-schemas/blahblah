@@ -204,6 +204,10 @@ class TestSubstitution(SubstitutionTestCase):
     value = '1234'
     self.assertSchemaHasValue(integer_or_numeric % value, value)
 
+    array_of_or_none = schema.any_of(schema.array.of(schema.integer), schema.null)
+    value = [1, 2, 3]
+    self.assertSchemaHasValue(array_of_or_none % value, value)
+
     with self.assertRaises(blahblah.errors.SubstitutionError):
       schema.any_of(schema.boolean, schema.integer) % 'banana'
 
@@ -213,6 +217,10 @@ class TestSubstitution(SubstitutionTestCase):
     integer_or_numeric = schema.one_of(schema.integer, schema.string.numeric)
     value = '1234'
     self.assertSchemaHasValue(integer_or_numeric % value, value)
+
+    array_of_or_none = schema.one_of(schema.array.of(schema.integer), schema.null)
+    value = [1, 2, 3]
+    self.assertSchemaHasValue(array_of_or_none % value, value)
 
     with self.assertRaises(blahblah.errors.SubstitutionError):
       schema.one_of(schema.boolean, schema.integer) % 'banana'

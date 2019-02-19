@@ -115,8 +115,9 @@ class Substitutor(district42.json_schema.AbstractVisitor):
 
   def visit_any_of(self, schema, value):
     substituted = district42.json_schema.from_native(value)
+    expected_types = self.__get_expected_types(schema._params['options'])
 
-    error = district42.helpers.check_type(substituted, [type(x) for x in schema._params['options']])
+    error = district42.helpers.check_type(substituted, expected_types)
     if error:
       if value is None:
         return self.__visit_nullable(schema)
@@ -124,10 +125,20 @@ class Substitutor(district42.json_schema.AbstractVisitor):
 
     return substituted
 
+  def __get_expected_types(self, options):
+    expected_types = []
+    for option in options:
+      expected_types += [type(option)]
+      # schema.one_of(schema.array.of(schema.integer), schema.null) % [1]
+      if isinstance(option, district42.json_schema.types.ArrayOf):
+        expected_types += [district42.json_schema.types.Array]
+    return expected_types
+
   def visit_one_of(self, schema, value):
     substituted = district42.json_schema.from_native(value)
+    expected_types = self.__get_expected_types(schema._params['options'])
 
-    error = district42.helpers.check_type(substituted, [type(x) for x in schema._params['options']])
+    error = district42.helpers.check_type(substituted, expected_types)
     if error:
       if value is None:
         return self.__visit_nullable(schema)
