@@ -113,8 +113,10 @@ class Generator(SchemaVisitor[Any]):
         if schema.props.keys is Nil:
             return generated
 
-        for key, val in schema.props.keys.items():
-            if key is ...:
+        for key, (val, is_optional) in schema.props.keys.items():
+            if is_ellipsis(key):
+                continue
+            if is_optional:
                 continue
             generated[key] = val.__accept__(self, **kwargs)
 
