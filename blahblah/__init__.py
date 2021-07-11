@@ -5,12 +5,14 @@ from district42.types import Schema
 
 from ._generator import Generator
 from ._random import Random
+from ._regex_generator import RegexGenerator
 from ._version import version
 
 __version__ = version
-__all__ = ("fake", "Generator", "Random",)
+__all__ = ("fake", "Generator", "Random", "RegexGenerator",)
 
-_generator = Generator(Random())
+_random = Random()
+_generator = Generator(_random, RegexGenerator(_random))
 
 
 def fake(schema: GenericSchema, **kwargs: Any) -> Any:

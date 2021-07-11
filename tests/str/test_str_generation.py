@@ -244,3 +244,27 @@ def test_str_contains_with_max_len_generation(max_length: int, *, generate, rand
             call.random_str(str_len - len(substr), STR_ALPHABET),
             call.random_int(0, str_len - len(substr)),
         ]
+
+
+def test_str_regex_generation(*, generate, random_):
+    with when:
+        res = generate(schema.str.regex(r"ab"))
+
+    with then:
+        assert res == "ab"
+        assert random_.mock_calls == []
+
+
+def test_str_regex_pattern_generation(*, generate, random_):
+    with given:
+        repeat = 2
+        random_.random_int.return_value = repeat
+
+    with when:
+        res = generate(schema.str.regex(r"a+"))
+
+    with then:
+        assert res == "a" * repeat
+        assert random_.mock_calls == [
+            call.random_int(1, 32)
+        ]

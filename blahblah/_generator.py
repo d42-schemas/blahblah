@@ -27,13 +27,15 @@ from ._consts import (
     STR_LEN_MIN,
 )
 from ._random import Random
+from ._regex_generator import RegexGenerator
 
 __all__ = ("Generator",)
 
 
 class Generator(SchemaVisitor[Any]):
-    def __init__(self, random: Random) -> None:
+    def __init__(self, random: Random, regex_generator: RegexGenerator) -> None:
         self._random = random
+        self._regex_generator = regex_generator
 
     def visit_none(self, schema: NoneSchema, **kwargs: Any) -> None:
         return None
@@ -62,6 +64,9 @@ class Generator(SchemaVisitor[Any]):
     def visit_str(self, schema: StrSchema, **kwargs: Any) -> str:
         if schema.props.value is not Nil:
             return schema.props.value
+
+        if schema.props.pattern is not Nil:
+            return self._regex_generator.generate(schema.props.pattern)
 
         if schema.props.len is not Nil:
             length = schema.props.len
