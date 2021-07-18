@@ -9,14 +9,16 @@ from ._regex_generator import RegexGenerator
 from ._version import version
 
 __version__ = version
-__all__ = ("fake", "Generator", "Random", "RegexGenerator",)
+__all__ = ("fake", "generate", "Generator", "Random", "RegexGenerator",)
 
 _random = Random()
 _generator = Generator(_random, RegexGenerator(_random))
 
 
-def fake(schema: GenericSchema, **kwargs: Any) -> Any:
+def generate(schema: GenericSchema, **kwargs: Any) -> Any:
     return schema.__accept__(_generator, **kwargs)
 
 
-Schema.__override__(Schema.__invert__.__name__, fake)
+fake = generate
+
+Schema.__override__(Schema.__invert__.__name__, generate)
