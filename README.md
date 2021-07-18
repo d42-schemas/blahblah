@@ -5,6 +5,8 @@
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/blahblah?style=flat-square)](https://pypi.python.org/pypi/blahblah/)
 [![Python Version](https://img.shields.io/pypi/pyversions/blahblah.svg?style=flat-square)](https://pypi.python.org/pypi/blahblah/)
 
+Fake data generator for [district42](https://github.com/nikitanovosibirsk/district42) schema
+
 (!) Work in progress, breaking changes are possible until v2.0 is released
 
 ## Installation
