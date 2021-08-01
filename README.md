@@ -67,6 +67,10 @@ print(fake(UserSchema))
   * [Any](#any)
     * [schema.any](#schemaany)
     * [schema.any(`*types`)](#schemaanytypes)
+  * [Custom Types](#custom-types)
+    * [1. Declare Schema](#1-declare-schema)
+    * [2. Register Generator](#2-register-generator)
+    * [3. Use](#3-use)
 
 ### None
 
@@ -345,3 +349,59 @@ sch = schema.any(schema.str, schema.int)
 generated = fake(sch)
 assert isinstance(generated, (str, int))
 ```
+
+### Custom Types
+
+#### 1. Declare Schema
+
+```python
+from typing import Any
+from uuid import UUID
+from district42 import Props, SchemaVisitor, SchemaVisitorReturnType as ReturnType
+from district42.types import Schema
+from niltype import Nilable
+
+
+class UUIDProps(Props):
+    @property
+    def value(self) -> Nilable[UUID]:
+        return self.get("value")
+
+
+class UUIDSchema(Schema[UUIDProps]):
+    def __accept__(self, visitor: SchemaVisitor[ReturnType], **kwargs: Any) -> ReturnType:
+        return visitor.visit_uuid(self, **kwargs)
+
+    def __call__(self, /, value: UUID) -> "UUIDSchema":
+        return self.__class__(self.props.update(value=value))
+```
+
+#### 2. Register Generator
+
+```python
+from typing import Any
+from uuid import UUID, uuid4
+from blahblah import Generator
+from niltype import Nil
+
+
+class UUIDGenerator(Generator, extend=True):
+    def visit_uuid(self, schema: UUIDSchema, **kwargs: Any) -> UUID:
+        if schema.props.value is not Nil:
+            return schema.props.value
+        return uuid4()
+```
+
+#### 3. Use
+
+```python
+from blahblah import fake
+from district42 import register_type, schema
+
+register_type("uuid", UUIDSchema)
+
+print(fake(schema.uuid))
+# 0d9d188a-4f1f-4bce-ba6e-51ca3732900e
+```
+
+Full code available here: [district42_exp_types/uuid](https://github.com/nikitanovosibirsk/district42-exp-types/tree/master/district42_exp_types/uuid)
