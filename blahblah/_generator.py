@@ -4,6 +4,7 @@ from district42 import SchemaVisitor
 from district42.types import (
     AnySchema,
     BoolSchema,
+    BytesSchema,
     ConstSchema,
     DictSchema,
     FloatSchema,
@@ -16,6 +17,8 @@ from district42.utils import is_ellipsis
 from niltype import Nil
 
 from ._consts import (
+    BYTES_LEN_MAX,
+    BYTES_LEN_MIN,
     FLOAT_MAX,
     FLOAT_MIN,
     INT_MAX,
@@ -146,3 +149,10 @@ class Generator(SchemaVisitor[Any]):
         if schema.props.value is Nil:
             return None
         return schema.props.value
+
+    def visit_bytes(self, schema: BytesSchema, **kwargs: Any) -> bytes:
+        if schema.props.value is not Nil:
+            return schema.props.value
+        length = self._random.random_int(BYTES_LEN_MIN, BYTES_LEN_MAX)
+        alphabet = STR_ALPHABET
+        return self._random.random_str(length, alphabet).encode()
