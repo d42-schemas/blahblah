@@ -10,6 +10,7 @@ from sre_constants import (
     IN,
     LITERAL,
     MAX_REPEAT,
+    MAXREPEAT,
     MIN_REPEAT,
     NEGATE,
     NOT_LITERAL,
@@ -87,7 +88,9 @@ class RegexGenerator:
 
     def _generate_max_repeat(self, value: Tuple[int, int, List[Any]]) -> str:
         min_count, max_count, val = value
-        count = self._random.random_int(min_count, min(self._max_repeat, max_count))
+        if max_count in (MAX_REPEAT, MAXREPEAT):
+            max_count = max(self._max_repeat, min_count)
+        count = self._random.random_int(min_count, max_count)
         return "".join(self._generate_pattern(val) for _ in range(count))
 
     def _generate_min_repeat(self, value: Tuple[int, int, List[Any]]) -> str:

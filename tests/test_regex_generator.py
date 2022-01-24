@@ -173,6 +173,74 @@ def test_min_repeat(*, random_: Mock):
         ]
 
 
+def test_repeat_exact(*, random_: Mock):
+    with given:
+        max_repeat = 10
+        repeat = max_repeat + 1
+        generator = make_generator(random_, max_repeat=max_repeat)
+        random_.random_int = Mock(return_value=repeat)
+
+    with when:
+        res = generator.generate(r"a{11}")
+
+    with then:
+        assert res == "a" * repeat
+        assert random_.mock_calls == [
+            call.random_int(repeat, repeat)
+        ]
+
+
+def test_repeat_min(*, random_: Mock):
+    with given:
+        max_repeat = 10
+        repeat = max_repeat + 1
+        generator = make_generator(random_, max_repeat=max_repeat)
+        random_.random_int = Mock(return_value=repeat)
+
+    with when:
+        res = generator.generate(r"a{11,}")
+
+    with then:
+        assert res == "a" * repeat
+        assert random_.mock_calls == [
+            call.random_int(repeat, repeat)
+        ]
+
+
+def test_repeat_max(*, random_: Mock):
+    with given:
+        max_repeat = 10
+        repeat = max_repeat + 1
+        generator = make_generator(random_, max_repeat=max_repeat)
+        random_.random_int = Mock(return_value=repeat)
+
+    with when:
+        res = generator.generate(r"a{,11}")
+
+    with then:
+        assert res == "a" * repeat
+        assert random_.mock_calls == [
+            call.random_int(0, repeat)
+        ]
+
+
+def test_repeat_range(*, random_: Mock):
+    with given:
+        repeat = 12
+        max_repeat = 10
+        generator = make_generator(random_, max_repeat=max_repeat)
+        random_.random_int = Mock(return_value=repeat)
+
+    with when:
+        res = generator.generate(r"a{11,13}")
+
+    with then:
+        assert res == "a" * repeat
+        assert random_.mock_calls == [
+            call.random_int(11, 13)
+        ]
+
+
 @pytest.mark.parametrize("pattern", [
     r"^",
     r"$",
@@ -244,7 +312,7 @@ def test_category_word(*, random_: Mock):
 
 def test_unknown_opcode(*, regex_generator: RegexGenerator, random_: Mock):
     with when, raises(Exception) as exception:
-        print(regex_generator.generate(r"(?P<quote>[']).*?(?P=quote)"))
+        regex_generator.generate(r"(?P<quote>[']).*?(?P=quote)")
 
     with then:
         assert exception.type is ValueError
