@@ -8,10 +8,12 @@ from district42.types import (
     ConstSchema,
     DictSchema,
     FloatSchema,
+    GenericTypeAliasSchema,
     IntSchema,
     ListSchema,
     NoneSchema,
     StrSchema,
+    TypeAliasPropsType,
 )
 from district42.utils import is_ellipsis
 from niltype import Nil
@@ -156,3 +158,7 @@ class Generator(SchemaVisitor[Any]):
         length = self._random.random_int(BYTES_LEN_MIN, BYTES_LEN_MAX)
         alphabet = STR_ALPHABET
         return self._random.random_str(length, alphabet).encode()
+
+    def visit_type_alias(self, schema: GenericTypeAliasSchema[TypeAliasPropsType],
+                         **kwargs: Any) -> Any:
+        return schema.props.type.__accept__(self, **kwargs)
