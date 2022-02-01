@@ -13,7 +13,7 @@ def find_dev_required():
 
 setup(
     name="blahblah",
-    version="1.4.1",
+    version="1.5.0",
     description="Fake data generator for district42 schema",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
