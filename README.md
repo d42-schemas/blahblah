@@ -7,8 +7,6 @@
 
 Fake data generator for [district42](https://github.com/nikitanovosibirsk/district42) schema
 
-(!) Work in progress, breaking changes are possible until v2.0 is released
-
 ## Installation
 
 ```sh
