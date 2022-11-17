@@ -1,22 +1,44 @@
 import string
-from re import sre_parse as sre  # type: ignore
-from sre_constants import (
-    ANY,
-    AT,
-    BRANCH,
-    CATEGORY,
-    CATEGORY_DIGIT,
-    CATEGORY_WORD,
-    IN,
-    LITERAL,
-    MAX_REPEAT,
-    MAXREPEAT,
-    MIN_REPEAT,
-    NEGATE,
-    NOT_LITERAL,
-    RANGE,
-    SUBPATTERN,
-)
+
+try:  # pragma: no cover
+    import re._parser as sre  # type: ignore
+    from re._constants import (  # type: ignore
+        ANY,
+        AT,
+        BRANCH,
+        CATEGORY,
+        CATEGORY_DIGIT,
+        CATEGORY_WORD,
+        IN,
+        LITERAL,
+        MAX_REPEAT,
+        MAXREPEAT,
+        MIN_REPEAT,
+        NEGATE,
+        NOT_LITERAL,
+        RANGE,
+        SUBPATTERN,
+    )
+except ImportError:  # Python < 3.11
+    import sre_parse as sre  # type: ignore
+    from sre_constants import (
+        ANY,
+        AT,
+        BRANCH,
+        CATEGORY,
+        CATEGORY_DIGIT,
+        CATEGORY_WORD,
+        IN,
+        LITERAL,
+        MAX_REPEAT,
+        MAXREPEAT,
+        MIN_REPEAT,
+        NEGATE,
+        NOT_LITERAL,
+        RANGE,
+        SUBPATTERN,
+    )
+
 from typing import Any, Dict, List, Optional, Tuple
 
 from ._random import Random

@@ -1,5 +1,9 @@
 import string
-from sre_constants import CATEGORY, CATEGORY_DIGIT, CATEGORY_WORD, LITERAL, RANGE
+
+try:
+    from re._constants import CATEGORY, CATEGORY_DIGIT, CATEGORY_WORD, LITERAL, RANGE
+except ImportError:
+    from sre_constants import CATEGORY, CATEGORY_DIGIT, CATEGORY_WORD, LITERAL, RANGE
 from typing import Dict, Optional
 from unittest.mock import Mock, call
 
