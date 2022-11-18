@@ -1,6 +1,7 @@
 import string
+import sys
 
-try:  # pragma: no cover
+if sys.version_info >= (3, 11):
     import re._parser as sre  # type: ignore
     from re._constants import (  # type: ignore
         ANY,
@@ -19,8 +20,8 @@ try:  # pragma: no cover
         RANGE,
         SUBPATTERN,
     )
-except ImportError:  # Python < 3.11
-    import sre_parse as sre  # type: ignore
+else:
+    import sre_parse as sre
     from sre_constants import (
         ANY,
         AT,
