@@ -2,8 +2,8 @@ import string
 import sys
 
 if sys.version_info >= (3, 11):
-    import re._parser as sre  # type: ignore
-    from re._constants import (  # type: ignore
+    import re._parser as sre
+    from re._constants import (
         ANY,
         AT,
         BRANCH,
@@ -156,5 +156,5 @@ class RegexGenerator:
             raise ValueError(f"Unknown opcode {opcode}")
 
     def generate(self, pattern: str) -> str:
-        parsed = sre.parse(pattern)
+        parsed = sre.parse(pattern)  # type: Any
         return self._generate_pattern(parsed)
