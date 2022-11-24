@@ -1,5 +1,10 @@
 import string
-from sre_constants import CATEGORY, CATEGORY_DIGIT, CATEGORY_WORD, LITERAL, RANGE
+import sys
+
+if sys.version_info >= (3, 11):
+    from re._constants import CATEGORY, CATEGORY_DIGIT, CATEGORY_WORD, LITERAL, RANGE
+else:
+    from sre_constants import CATEGORY, CATEGORY_DIGIT, CATEGORY_WORD, LITERAL, RANGE
 from typing import Dict, Optional
 from unittest.mock import Mock, call
 

@@ -1,22 +1,45 @@
 import string
-from re import sre_parse as sre  # type: ignore
-from sre_constants import (
-    ANY,
-    AT,
-    BRANCH,
-    CATEGORY,
-    CATEGORY_DIGIT,
-    CATEGORY_WORD,
-    IN,
-    LITERAL,
-    MAX_REPEAT,
-    MAXREPEAT,
-    MIN_REPEAT,
-    NEGATE,
-    NOT_LITERAL,
-    RANGE,
-    SUBPATTERN,
-)
+import sys
+
+if sys.version_info >= (3, 11):
+    import re._parser as sre
+    from re._constants import (
+        ANY,
+        AT,
+        BRANCH,
+        CATEGORY,
+        CATEGORY_DIGIT,
+        CATEGORY_WORD,
+        IN,
+        LITERAL,
+        MAX_REPEAT,
+        MAXREPEAT,
+        MIN_REPEAT,
+        NEGATE,
+        NOT_LITERAL,
+        RANGE,
+        SUBPATTERN,
+    )
+else:
+    import sre_parse as sre
+    from sre_constants import (
+        ANY,
+        AT,
+        BRANCH,
+        CATEGORY,
+        CATEGORY_DIGIT,
+        CATEGORY_WORD,
+        IN,
+        LITERAL,
+        MAX_REPEAT,
+        MAXREPEAT,
+        MIN_REPEAT,
+        NEGATE,
+        NOT_LITERAL,
+        RANGE,
+        SUBPATTERN,
+    )
+
 from typing import Any, Dict, List, Optional, Tuple
 
 from ._random import Random
@@ -133,5 +156,5 @@ class RegexGenerator:
             raise ValueError(f"Unknown opcode {opcode}")
 
     def generate(self, pattern: str) -> str:
-        parsed = sre.parse(pattern)
+        parsed = sre.parse(pattern)  # type: Any
         return self._generate_pattern(parsed)
