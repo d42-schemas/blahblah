@@ -1,11 +1,11 @@
 # blahblah
 
-[![Codecov](https://img.shields.io/codecov/c/github/nikitanovosibirsk/blahblah/master.svg?style=flat-square)](https://codecov.io/gh/nikitanovosibirsk/blahblah)
+[![Codecov](https://img.shields.io/codecov/c/github/tsv1/blahblah/master.svg?style=flat-square)](https://codecov.io/gh/tsv1/blahblah)
 [![PyPI](https://img.shields.io/pypi/v/blahblah.svg?style=flat-square)](https://pypi.python.org/pypi/blahblah/)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/blahblah?style=flat-square)](https://pypi.python.org/pypi/blahblah/)
 [![Python Version](https://img.shields.io/pypi/pyversions/blahblah.svg?style=flat-square)](https://pypi.python.org/pypi/blahblah/)
 
-Fake data generator for [district42](https://github.com/nikitanovosibirsk/district42) schema
+Fake data generator for [district42](https://github.com/tsv1/district42) schema
 
 ## Installation
 
@@ -402,4 +402,4 @@ print(fake(schema.uuid))
 # 0d9d188a-4f1f-4bce-ba6e-51ca3732900e
 ```
 
-Full code available here: [district42_exp_types/uuid](https://github.com/nikitanovosibirsk/district42-exp-types/tree/master/district42_exp_types/uuid)
+Full code available here: [district42_exp_types/uuid](https://github.com/tsv1/district42-exp-types/tree/master/district42_exp_types/uuid)
