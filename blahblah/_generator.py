@@ -1,4 +1,5 @@
 from typing import Any, Dict, List
+from uuid import UUID, uuid4
 
 from district42 import SchemaVisitor
 from district42.types import (
@@ -14,6 +15,7 @@ from district42.types import (
     NoneSchema,
     StrSchema,
     TypeAliasPropsType,
+    UUID4Schema,
 )
 from district42.utils import is_ellipsis
 from niltype import Nil
@@ -162,3 +164,8 @@ class Generator(SchemaVisitor[Any]):
     def visit_type_alias(self, schema: GenericTypeAliasSchema[TypeAliasPropsType],
                          **kwargs: Any) -> Any:
         return schema.props.type.__accept__(self, **kwargs)
+
+    def visit_uuid4(self, schema: UUID4Schema, **kwargs: Any) -> UUID:
+        if schema.props.value is not Nil:
+            return schema.props.value
+        return uuid4()
