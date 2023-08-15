@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Any, Dict, List
 
 from district42 import SchemaVisitor
@@ -6,6 +7,7 @@ from district42.types import (
     BoolSchema,
     BytesSchema,
     ConstSchema,
+    DateTimeSchema,
     DictSchema,
     FloatSchema,
     GenericTypeAliasSchema,
@@ -162,3 +164,8 @@ class Generator(SchemaVisitor[Any]):
     def visit_type_alias(self, schema: GenericTypeAliasSchema[TypeAliasPropsType],
                          **kwargs: Any) -> Any:
         return schema.props.type.__accept__(self, **kwargs)
+
+    def visit_datetime(self, schema: DateTimeSchema, **kwargs: Any) -> datetime:
+        if schema.props.value is not Nil:
+            return schema.props.value
+        return datetime.utcnow()
