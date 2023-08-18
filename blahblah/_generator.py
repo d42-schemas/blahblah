@@ -172,10 +172,12 @@ class Generator(SchemaVisitor[Any]):
                          **kwargs: Any) -> Any:
         return schema.props.type.__accept__(self, **kwargs)
 
+    def visit_datetime(self, schema: DateTimeSchema, **kwargs: Any) -> datetime:
+        if schema.props.value is not Nil:
+            return schema.props.value
+        return datetime.utcnow()
+
     def visit_uuid4(self, schema: UUID4Schema, **kwargs: Any) -> UUID:
         if schema.props.value is not Nil:
             return schema.props.value
         return uuid4()
-
-    def visit_datetime(self, schema: DateTimeSchema, **kwargs: Any) -> datetime:
-        raise NotImplementedError()
