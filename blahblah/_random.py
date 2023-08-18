@@ -2,9 +2,9 @@ import random
 import sys
 from typing import Any, List, Sequence, TypeVar
 
-__all__ = ("Random",)
+from niltype import Nil, Nilable
 
-from blahblah._consts import FLOAT_MIN, FLOAT_MAX
+__all__ = ("Random",)
 
 _T = TypeVar("_T")
 SeedType = TypeVar("SeedType", int, float, str, bytes, bytearray)
@@ -17,27 +17,34 @@ class Random:
     def random_int(self, start: int, end: int) -> int:
         return random.randint(start, end)
 
-    def random_float(self, start: float, end: float) -> float:
-        return random.uniform(start, end)
+    def random_float(self, start: float, end: float, precision: Nilable[int] = Nil) -> float:
+        if precision is Nil:
+            return random.uniform(start, end)
 
-    def random_float_with_precision(
-        self, start: float, end: float, precision: int
-    ) -> float:
-        right_digits = random.randint(precision, sys.float_info.dig - 1)
+        if start >= 0:
+            sign = 1
+        elif end <= 0:
+            sign = -1
+        else:
+            sign = random.choice((1, -1))
+
+        # Generate a random number of right digits within the precision limit
+        right_digits = random.randint(0, precision)
+
+        # Calculate the potential maximum left digits based on the range
         left_digits = max(1, sys.float_info.dig - right_digits)
 
-        sign = random.choice(("+", "-"))
-        left_number = random.randint(0, pow(10, left_digits) - 1)
+        # Generate random left and right parts
+        left_number = sign * random.randint(0, pow(10, left_digits) - 1)
         right_number = random.randint(0, pow(10, right_digits) - 1)
 
-        result = round(float(f"{sign}{left_number}.{right_number}"), precision)
+        result = float(f"{left_number}.{right_number}")
 
-        # It is possible that result is higher or lower than max and min values, ensure that values
-        # belong to specified numbers
+        # Adjust the result if it's out of the [start, end] range
         if result > end:
-            result = result - (result - end + random.uniform(0, end))
+            result -= result - end + self.random_float(0, end)
         if result < start:
-            result = result + (start - result + random.uniform(0, start))
+            result += start - result + self.random_float(0, start)
 
         return round(result, precision)
 

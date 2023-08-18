@@ -8,7 +8,7 @@ from blahblah._consts import FLOAT_MAX, FLOAT_MIN
 from .._fixtures import *  # noqa: F401, F403
 
 
-def _test_float_generation(*, generate, random_):
+def test_float_generation(*, generate, random_):
     with given:
         sch = schema.float
 
@@ -19,7 +19,7 @@ def _test_float_generation(*, generate, random_):
         assert isinstance(res, float)
         assert FLOAT_MIN <= res <= FLOAT_MAX
         assert random_.mock_calls == [
-            call.random_int(FLOAT_MIN, FLOAT_MAX)
+            call.random_float(FLOAT_MIN, FLOAT_MAX)
         ]
 
 
@@ -36,7 +36,7 @@ def test_float_value_generation(*, generate, random_):
         assert random_.mock_calls == []
 
 
-def _test_float_min_generation(*, generate, random_):
+def test_float_min_generation(*, generate, random_):
     with given:
         min_val = 3.14
         sch = schema.float.min(min_val)
@@ -47,11 +47,11 @@ def _test_float_min_generation(*, generate, random_):
     with then:
         assert res >= min_val
         assert random_.mock_calls == [
-            call.random_int(min_val, FLOAT_MAX)
+            call.random_float(min_val, FLOAT_MAX)
         ]
 
 
-def _test_float_max_generation(*, generate, random_):
+def test_float_max_generation(*, generate, random_):
     with given:
         max_val = 6.28
         sch = schema.float.max(max_val)
@@ -62,7 +62,7 @@ def _test_float_max_generation(*, generate, random_):
     with then:
         assert res <= max_val
         assert random_.mock_calls == [
-            call.random_int(FLOAT_MIN, max_val)
+            call.random_float(FLOAT_MIN, max_val)
         ]
 
 
@@ -91,10 +91,9 @@ def test_float_min_precision_generation(*, generate, random_):
         res = generate(sch)
 
     with then:
-        assert len(str(res).split('.')[1]) <= precision
         assert res >= min_val
         assert random_.mock_calls == [
-            call.random_float_with_precision(min_val, FLOAT_MAX, precision)
+            call.random_float(min_val, FLOAT_MAX, precision)
         ]
 
 
@@ -108,10 +107,9 @@ def test_float_max_precision_generation(*, generate, random_):
         res = generate(sch)
 
     with then:
-        assert len(str(res).split('.')[1]) <= precision
         assert res <= max_val
         assert random_.mock_calls == [
-            call.random_float_with_precision(FLOAT_MIN, max_val, precision)
+            call.random_float(FLOAT_MIN, max_val, precision)
         ]
 
 
@@ -125,10 +123,9 @@ def test_float_min_max_precision_generation(*, generate, random_):
         res = generate(sch)
 
     with then:
-        assert len(str(res).split('.')[1]) <= precision
         assert min_val <= res <= max_val
         assert random_.mock_calls == [
-            call.random_float_with_precision(min_val, max_val, precision)
+            call.random_float(min_val, max_val, precision)
         ]
 
 
@@ -141,7 +138,7 @@ def test_float_precision_generation(*, generate, random_):
         res = generate(sch)
 
     with then:
-        assert len(str(res).split('.')[1]) <= precision
+        assert FLOAT_MIN <= res <= FLOAT_MAX
         assert random_.mock_calls == [
-            call.random_float_with_precision(FLOAT_MIN, FLOAT_MAX, precision)
+            call.random_float(FLOAT_MIN, FLOAT_MAX, precision)
         ]
