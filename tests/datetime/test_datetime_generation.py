@@ -1,5 +1,4 @@
 from datetime import datetime
-from unittest.mock import call
 
 from baby_steps import given, then, when
 from district42 import schema
