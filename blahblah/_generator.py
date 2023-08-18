@@ -1,4 +1,6 @@
+from datetime import datetime
 from typing import Any, Dict, List
+from uuid import UUID, uuid4
 
 from district42 import SchemaVisitor
 from district42.types import (
@@ -6,6 +8,7 @@ from district42.types import (
     BoolSchema,
     BytesSchema,
     ConstSchema,
+    DateTimeSchema,
     DictSchema,
     FloatSchema,
     GenericTypeAliasSchema,
@@ -14,6 +17,7 @@ from district42.types import (
     NoneSchema,
     StrSchema,
     TypeAliasPropsType,
+    UUID4Schema,
 )
 from district42.utils import is_ellipsis
 from niltype import Nil
@@ -66,10 +70,10 @@ class Generator(SchemaVisitor[Any]):
         max_value = schema.props.max if (schema.props.max is not Nil) else FLOAT_MAX
         precision = schema.props.precision if (schema.props.precision is not Nil) else Nil
 
-        if precision is Nil:
-            return self._random.random_float(min_value, max_value)
-        else:
-            return self._random.random_float_with_precision(min_value, max_value, precision)
+        if precision is not Nil:
+            assert isinstance(precision, int)  # for type checker
+            return self._random.random_float(min_value, max_value, precision)
+        return self._random.random_float(min_value, max_value)
 
     def visit_str(self, schema: StrSchema, **kwargs: Any) -> str:
         if schema.props.value is not Nil:
@@ -167,3 +171,11 @@ class Generator(SchemaVisitor[Any]):
     def visit_type_alias(self, schema: GenericTypeAliasSchema[TypeAliasPropsType],
                          **kwargs: Any) -> Any:
         return schema.props.type.__accept__(self, **kwargs)
+
+    def visit_uuid4(self, schema: UUID4Schema, **kwargs: Any) -> UUID:
+        if schema.props.value is not Nil:
+            return schema.props.value
+        return uuid4()
+
+    def visit_datetime(self, schema: DateTimeSchema, **kwargs: Any) -> datetime:
+        raise NotImplementedError()
