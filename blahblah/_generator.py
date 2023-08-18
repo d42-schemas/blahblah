@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import Any, Dict, List
+from uuid import UUID, uuid4
 
 from district42 import SchemaVisitor
 from district42.types import (
@@ -16,6 +17,7 @@ from district42.types import (
     NoneSchema,
     StrSchema,
     TypeAliasPropsType,
+    UUID4Schema,
 )
 from district42.utils import is_ellipsis
 from niltype import Nil
@@ -66,6 +68,11 @@ class Generator(SchemaVisitor[Any]):
 
         min_value = schema.props.min if (schema.props.min is not Nil) else FLOAT_MIN
         max_value = schema.props.max if (schema.props.max is not Nil) else FLOAT_MAX
+        precision = schema.props.precision if (schema.props.precision is not Nil) else Nil
+
+        if precision is not Nil:
+            assert isinstance(precision, int)  # for type checker
+            return self._random.random_float(min_value, max_value, precision)
         return self._random.random_float(min_value, max_value)
 
     def visit_str(self, schema: StrSchema, **kwargs: Any) -> str:
@@ -169,3 +176,8 @@ class Generator(SchemaVisitor[Any]):
         if schema.props.value is not Nil:
             return schema.props.value
         return datetime.utcnow()
+
+    def visit_uuid4(self, schema: UUID4Schema, **kwargs: Any) -> UUID:
+        if schema.props.value is not Nil:
+            return schema.props.value
+        return uuid4()
