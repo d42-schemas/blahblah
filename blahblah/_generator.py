@@ -66,7 +66,12 @@ class Generator(SchemaVisitor[Any]):
 
         min_value = schema.props.min if (schema.props.min is not Nil) else FLOAT_MIN
         max_value = schema.props.max if (schema.props.max is not Nil) else FLOAT_MAX
-        return self._random.random_float(min_value, max_value)
+        precision = schema.props.precision if (schema.props.precision is not Nil) else Nil
+
+        if precision is Nil:
+            return self._random.random_float(min_value, max_value)
+        else:
+            return self._random.random_float_with_precision(min_value, max_value, precision)
 
     def visit_str(self, schema: StrSchema, **kwargs: Any) -> str:
         if schema.props.value is not Nil:
