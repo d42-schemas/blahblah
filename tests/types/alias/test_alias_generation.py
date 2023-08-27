@@ -6,8 +6,8 @@ from district42.types import TypeAliasSchema
 
 from blahblah._consts import INT_MAX
 
-from .._fixtures import *  # noqa: F401, F403
-from .._utils import schema_mock
+from ..._fixtures import *  # noqa: F401, F403
+from ..._utils import schema_mock
 
 
 def test_alias_default_generation(*, generate, random_):

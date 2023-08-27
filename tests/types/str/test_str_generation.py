@@ -7,7 +7,7 @@ from district42 import schema
 
 from blahblah._consts import STR_ALPHABET, STR_LEN_MAX, STR_LEN_MIN
 
-from .._fixtures import *  # noqa: F401, F403
+from ..._fixtures import *  # noqa: F401, F403
 
 
 def test_str_generation(*, generate, random_):
