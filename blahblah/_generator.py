@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Any, Dict, List
 from uuid import UUID, uuid4
 
-from district42 import SchemaVisitor
+from district42 import GenericSchema, SchemaVisitor
 from district42.types import (
     AnySchema,
     BoolSchema,
@@ -45,6 +45,15 @@ class Generator(SchemaVisitor[Any]):
     def __init__(self, random: Random, regex_generator: RegexGenerator) -> None:
         self._random = random
         self._regex_generator = regex_generator
+
+    @property
+    def random(self) -> Random:
+        return self._random
+
+    def visit(self, schema: GenericSchema, **kwargs: Any) -> Any:
+        if generate_method := getattr(schema, "__blahblah__", None):
+            return generate_method(self, **kwargs)
+        raise NotImplementedError(f"{schema.__class__.__name__} has no method '__blahblah__'")
 
     def visit_none(self, schema: NoneSchema, **kwargs: Any) -> None:
         return None

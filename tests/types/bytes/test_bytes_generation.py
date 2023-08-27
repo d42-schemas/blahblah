@@ -5,7 +5,7 @@ from district42 import schema
 
 from blahblah._consts import BYTES_LEN_MAX, BYTES_LEN_MIN, STR_ALPHABET
 
-from .._fixtures import *  # noqa: F401, F403
+from ..._fixtures import *  # noqa: F401, F403
 
 
 def test_bytes_generation(*, generate, random_):

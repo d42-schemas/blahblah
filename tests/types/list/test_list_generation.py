@@ -5,8 +5,8 @@ from district42 import schema
 
 from blahblah._consts import LIST_LEN_MAX, LIST_LEN_MIN
 
-from .._fixtures import *  # noqa: F401, F403
-from .._utils import schema_mock
+from ..._fixtures import *  # noqa: F401, F403
+from ..._utils import schema_mock
 
 
 def test_list_generation(*, generate, random_):

@@ -5,7 +5,7 @@ from district42 import schema
 
 from blahblah._consts import FLOAT_MAX, FLOAT_MIN
 
-from .._fixtures import *  # noqa: F401, F403
+from ..._fixtures import *  # noqa: F401, F403
 
 
 def test_float_generation(*, generate, random_):

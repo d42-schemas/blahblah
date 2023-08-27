@@ -3,8 +3,8 @@ from unittest.mock import call
 from baby_steps import given, then, when
 from district42 import optional, schema
 
-from .._fixtures import *  # noqa: F401, F403
-from .._utils import schema_mock
+from ..._fixtures import *  # noqa: F401, F403
+from ..._utils import schema_mock
 
 
 def test_dict_generation(*, generate, random_):
