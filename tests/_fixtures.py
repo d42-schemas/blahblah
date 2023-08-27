@@ -2,7 +2,7 @@ from typing import Any, Callable
 from unittest.mock import Mock
 
 import pytest
-from district42 import Schema
+from district42.types import Schema
 
 from blahblah import Generator, Random, RegexGenerator
 
