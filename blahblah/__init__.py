@@ -16,6 +16,9 @@ _generator = Generator(_random, RegexGenerator(_random))
 
 
 def generate(schema: GenericSchema, **kwargs: Any) -> Any:
+    if not isinstance(schema, Schema):
+        raise TypeError("Expected 'schema' to be an instance of 'district42.types.Schema', "
+                        f"got {schema} instead")
     return schema.__accept__(_generator, **kwargs)
 
 
