@@ -1,2 +1,2 @@
 niltype>=0.3,<2.0
-district42>=1.7.0,<1.8
+district42>=1.8.0,<1.9
