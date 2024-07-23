@@ -1,4 +1,5 @@
 from datetime import date
+from unittest.mock import call
 
 from baby_steps import given, then, when
 from district42 import schema
@@ -15,7 +16,9 @@ def test_date_generation(*, generate, random_):
 
     with then:
         assert isinstance(res, date)
-        assert random_.mock_calls == []
+        assert random_.mock_calls == [
+            call.random_int(-100_000, +100_000)
+        ]
 
 
 def test_date_value_generation(*, generate, random_):

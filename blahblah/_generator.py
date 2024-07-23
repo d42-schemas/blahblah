@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from typing import Any, Dict, List
 from uuid import UUID, uuid4
 
@@ -195,4 +195,5 @@ class Generator(SchemaVisitor[Any]):
     def visit_date(self, schema: DateSchema, **kwargs: Any) -> date:
         if schema.props.value is not Nil:
             return schema.props.value
-        return date.today()
+        days = self._random.random_int(-100_000, +100_000)
+        return date.today() - timedelta(days=days)
