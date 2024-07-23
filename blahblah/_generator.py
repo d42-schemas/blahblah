@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 from typing import Any, Dict, List
 from uuid import UUID, uuid4
 
@@ -8,6 +8,7 @@ from district42.types import (
     BoolSchema,
     BytesSchema,
     ConstSchema,
+    DateSchema,
     DateTimeSchema,
     DictSchema,
     FloatSchema,
@@ -190,3 +191,8 @@ class Generator(SchemaVisitor[Any]):
         if schema.props.value is not Nil:
             return schema.props.value
         return uuid4()
+
+    def visit_date(self, schema: DateSchema, **kwargs: Any) -> date:
+        if schema.props.value is not Nil:
+            return schema.props.value
+        return date.today()
