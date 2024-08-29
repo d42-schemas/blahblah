@@ -7,4 +7,4 @@
 
 `blahblah` is a package designed for generating fake data based on the [district42](https://github.com/d42-schemas/district42) schemas. It provides a simple and flexible way to generate test data for your applications.
 
-This package is part of the [d42 package](https://pypi.org/project/d42/). For a quick-start guide and detailed documentation, please visit the official documentation at [d42.vedro.io/docs/quick-start](https://d42.vedro.io/docs/quick-start)
+This package is part of the [d42 package](https://pypi.org/project/d42/). For a quick-start guide and detailed documentation, please visit the official documentation at [d42.sh/docs/quick-start](https://d42.sh/docs/quick-start)
